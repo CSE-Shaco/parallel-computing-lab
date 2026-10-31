@@ -1,0 +1,14 @@
+/build*/
+__pycache__/
+*.py[cod]
+.DS_Store
+.idea/
+.vscode/
+*.o
+*.dylib
+*.so
+*.exe
+node_modules/
+.env
+.env.*
+/benchmarks/results/local*/
