@@ -1,75 +1,81 @@
-# Running the GPU Validation and Benchmark
+# Running the four-kernel GPU validation and benchmark
 
-Use this workflow on a Linux host with an actual NVIDIA GPU, a compatible driver,
-`nvcc`, and Python 3. No cloud account, remote connection, or upload is performed by
-the runner. CMake is not required for this direct-compiler workflow.
+Run this workflow in Ubuntu on WSL2 with the RTX 4060. The repository includes a direct `nvcc` path, so CMake is optional for this run. Use the Windows NVIDIA driver inside WSL; do not install a Linux NVIDIA driver in the distribution. NVIDIA's [CUDA on WSL guide](https://docs.nvidia.com/cuda/wsl-user-guide/) explains the supported driver/toolkit split.
 
-First inspect the target host:
+## Prepare the updated checkout
+
+From Ubuntu, change to the existing `parallel-computing-lab` checkout and update it:
 
 ```sh
-python3 benchmarks/run_gpu_validation.py --preflight-only
-nvidia-smi --query-gpu=name,compute_cap --format=csv
+cd ~/parallel-computing-lab
+git pull --ff-only origin main
 ```
 
-Run commands from `cuda-kernel-optimization/`. Select an explicit architecture
-supported by the real device and installed compiler. For example, `sm_75` is only
-an example for a compatible compute-capability 7.5 target; do not copy it for an
-unidentified GPU. The preflight cannot establish that a GPU context will work;
-the GPU correctness executable checks actual execution before any timing run.
+If that is a new WSL distribution, install/configure GitHub CLI authentication there so it can read the private repository. Open the CUDA subproject:
 
-With the correctly selected architecture stored in `GPU_ARCH`, run:
+```sh
+cd cuda-kernel-optimization
+```
+
+## Check the target and tools
+
+```sh
+nvidia-smi --query-gpu=name,compute_cap,driver_version,memory.total --format=csv
+nvcc --version
+compute-sanitizer --version
+python3 benchmarks/run_gpu_validation.py --preflight-only
+```
+
+Confirm the device is a GeForce RTX 4060, compute capability 8.9, and that the toolkit exposes `nvcc` and Compute Sanitizer. Use `sm_89` for this card. If any prerequisite fails, resolve that first; a preflight pass only checks tool/device inventory, not kernel correctness.
+
+## Run a fresh four-way sweep
+
+From `cuda-kernel-optimization/`, run:
 
 ```sh
 python3 benchmarks/run_gpu_validation.py \
-  --arch "$GPU_ARCH" \
-  --out results/gpu-run-01 \
-  --repeats 30 \
-  --shape 257,65 --shape 1024,128 --shape 4096,256
+  --arch sm_89 \
+  --out results/rtx4060-wsl-run-03 \
+  --repeats 40 \
+  --shape 257,65 \
+  --shape 1024,128 \
+  --shape 4096,256 \
+  --shape 1024,512
 ```
 
-Choose a new output directory each time. Existing directories and symlinks are
-refused. Missing NVIDIA tools or a failed device inventory probe stop execution
-before a result directory is created. Compilation or runtime failures retain a
-`failed` execution record and logs; they never constitute measurements.
+This rebuilds and validates the independent CPU reference and the host tile-layout oracle, compiles four GPU kernels, checks all 12 correctness shapes on each, then runs memcheck and racecheck. Only when those gates pass does it collect 10 warmups plus 40 measured launches per kernel/shape. The order rotates across repetitions. The original shapes are measured again alongside the additional 1024×512 shape, so the four candidates share one fresh build and session.
 
-The runner records device inventory, CUDA compiler version, exact compiler and
-execution arguments, source SHA-256 values, binary hashes, and relevant device
-selection. It builds and runs the host reference, then the eight GPU correctness
-shapes. If `compute-sanitizer` is installed, memcheck and racecheck must pass;
-otherwise that check remains explicitly **Not Verified**. Only after correctness
-does it build/run the benchmark and validate the requested shapes and repetition
-counts. It uses the existing three warmup launches, alternating kernel order,
-CUDA-event timing, and per-run CPU reference comparisons.
+The CPU reference cost scales as `O(samples × features²)`. The suggested shapes keep the reference work moderate while testing partial tiles, both existing cases and a larger output matrix. If you change shapes, record the command and keep all four kernels on the same set. The runner refuses to reuse an existing output directory; choose `run-04` for another sweep.
 
-Successful runs contain:
+If compilation, correctness, Compute Sanitizer or timing fails, the run is recorded as failed and retains its logs. Do not use a failed result as a benchmark. In WSL, a “Failed to initialize WDDM debugger interface” message means the Windows GPU debug interface needs to be enabled for Compute Sanitizer; it does not by itself indicate a kernel memory bug. NVIDIA lists the required Windows registry interface under [Compute Sanitizer's Windows behavior](https://docs.nvidia.com/compute-sanitizer/ComputeSanitizer/index.html#windows-specific-behavior). Do not count sanitizer coverage as passed until both tools complete successfully.
 
-- `execution.json`: complete status, commands, device/toolchain information, hashes.
-- `logs/`: stdout/stderr for each executed build, test, and measurement step.
-- `benchmark.json`: raw event samples with actual GPU/runtime metadata.
-- `raw/`: per-shape documents retained even if a later shape fails.
-- `summary.json` and `kernel-time.svg`: derived only from validated samples.
-- `build/`: the executables used in the run, preserved for local evidence.
+## Review and publish the run
 
-Before publishing curated results, review log paths and environment metadata and
-exclude generated binaries. The full run directory is local evidence, not an
-instruction to commit every artifact.
+Successful output contains:
 
-Both kernels compute the uncentered second moment `XᵀX/m`. Timing covers kernels
-only, excluding transfers and the CPU reference. FP32 accumulation has a bounded
-input/tolerance contract; no general numerical guarantee or GPU speedup follows
-from host-only tests. CPU validation scales as `O(samples * features²)`, so begin
-with the supplied shapes before increasing the workload.
+- `execution.json`: environment, source/binary hashes, compile and run commands, validation status.
+- `benchmark.json` and `raw/`: per-kernel timings and per-shape raw samples.
+- `summary.json` and `kernel-time.svg`: medians, min–max spread, counts, and baseline-relative ratios.
+- `logs/`: build, correctness, sanitizer, benchmark and analyzer output.
+- `build/`: local executables used for the run; this directory is ignored by Git.
 
-The runner does not lock GPU clocks, thermal state, power policy, or background
-load. Repeats describe the selected session; shared-host measurements do not
-establish a universal performance advantage.
+Inspect that `execution.json` has `status: complete`, all four kernel names appear for every requested shape, the schema is version 2, and sanitizer reports no errors or warnings. Then review exactly what Git will stage:
 
-A successful [RTX 4060 WSL2 measurement](../results/rtx4060-wsl-run-02/README.md)
-is retained in this repository. Its eight-shape correctness executable passed
-memcheck and racecheck before timing. The macOS review checked the supplied
-records and reran host-only tests/analysis; it did not execute CUDA. Host-only
-runner safeguard tests alone do not verify CUDA compilation or device execution.
+```sh
+git status --short
+git add -- results/rtx4060-wsl-run-03/execution.json \
+  results/rtx4060-wsl-run-03/benchmark.json \
+  results/rtx4060-wsl-run-03/summary.json \
+  results/rtx4060-wsl-run-03/kernel-time.svg \
+  results/rtx4060-wsl-run-03/raw \
+  results/rtx4060-wsl-run-03/logs
+git diff --cached --stat
+```
 
-The recorded source hashes use Windows CRLF checkout bytes. They match every
-corresponding LF repository file after exact LF→CRLF conversion; retain this
-distinction when comparing provenance across operating systems.
+Verify that only this successful run's evidence is staged and that `build/` executables are absent. Then commit and push the run. Keep the historical [run 02](../results/rtx4060-wsl-run-02/README.md) unchanged: it measures only the original baseline/tiled pair at source snapshot `d5a7070`.
+
+## Measurement scope
+
+The kernels compute the uncentered second-moment matrix `XᵀX/m`; CPU reference work and host/device transfers are outside the timed region. The four-kernel analyzer reports baseline median divided by each candidate median, so a ratio above 1 means the candidate's median was lower in that sweep. These are kernel-only measurements, not end-to-end application speedups.
+
+The runner does not lock clocks, thermal state, power policy or background load. Forty repeated launches reduce dependence on a single sample but remain one device session. Use independent sweeps and a profiler to support broader conclusions. The previous run 02 is historical evidence for two kernels only; it cannot predict performance for the new implementations.
