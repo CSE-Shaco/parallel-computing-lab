@@ -1,6 +1,6 @@
 # Integration Validation
 
-> Historical record: the merge and macOS checks below predate the [successful RTX 4060 WSL2 GPU run](../cuda-kernel-optimization/results/rtx4060-wsl-run-02/README.md). Their GPU-unverified statements describe those earlier stages. Current GPU compilation, correctness, sanitizer and measured-result status is documented with that run; CMake/CTest remains unverified.
+> Historical record: the merge and macOS checks below predate the [four-kernel RTX 4060 WSL2 run 03](../cuda-kernel-optimization/results/rtx4060-wsl-run-03/README.md). Their GPU-unverified statements describe those earlier stages. Current direct-CUDA compilation, correctness, sanitizer and timing evidence is documented with run 03. A later CPU-only CMake build passed 6/6 CTests; CUDA-enabled CMake/GPU CTest remains unverified. The original records below are preserved as historical snapshots.
 
 Executed on 2026-10-31 after the CUDA project was moved into `cuda-kernel-optimization/`. The root repository is the existing Parallel Computing Lab repository; the CUDA subproject has no nested `.git` directory. No commit, Git initialization, history rewrite, remote change, or push was performed.
 

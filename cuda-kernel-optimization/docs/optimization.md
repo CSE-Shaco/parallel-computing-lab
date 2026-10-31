@@ -29,10 +29,23 @@ The [frozen RTX 4060 WSL2 run](../results/rtx4060-wsl-run-02/README.md) measured
 
 Those timings do not tell us which instruction or memory behavior limited either kernel, and they say nothing about `coalesced_tiled` or `register_tiled`. Strided input loads in the original tile and barrier work are concrete code properties; attributing the observed timings to them remains a hypothesis until counters and controlled repeats support it. The original shared-memory reads broadcast a repeated word within a warp, so bank conflicts are not established as the cause.
 
-## Validation before making a speedup claim
+## Four-kernel measurement: gains and negative ablation
 
-Build and validate the current four-kernel source as one unit on the same RTX 4060 session. Run all 12 correctness shapes for all four variants, memcheck and racecheck, then measure all kernels on identical dimensions with the same compiler flags, warmups and repetition policy. The fresh run includes the two original kernels again so comparisons do not mix sessions or compiler configurations. Keep the historical two-kernel directory unchanged.
+The [RTX 4060 WSL2 run 03](../results/rtx4060-wsl-run-03/README.md) compiled source snapshot `33c5536` and passed 12 GPU correctness shapes for every variant, then memcheck and racecheck. It measured all four implementations together, using ten warmups, rotating order, and 40 samples per kernel/shape. Ratios below are **same-run baseline median ÷ candidate median**; values below 1 mean that candidate was slower.
 
-After a successful sweep, use Nsight Compute (when supported in the chosen WSL setup) to inspect global-load efficiency, cache behavior, barrier stalls, register usage and occupancy. Compare each relevant counter for the same input and build. These measurements can explain a timing difference; code structure alone cannot establish that the new variants are faster.
+| Input shape | Original tiled | Coalesced tiled | Register tiled |
+| --- | ---: | ---: | ---: |
+| 257 × 65 | 0.900× | 0.690× | 0.601× |
+| 1024 × 128 | 1.006× | 0.845× | 1.067× |
+| 4096 × 256 | 1.037× | 0.863× | 1.305× |
+| 1024 × 512 | 1.041× | 0.872× | 1.405× |
 
-Potential later work includes tile-size sweeps, symmetry-aware work reduction, and cuBLAS comparison. None is represented as implemented or measured here.
+The coalesced-load variant lost to baseline on every tested shape. That negative result is part of the ablation: contiguous cooperative input loads do not ensure a lower kernel time after shared-memory accesses, indexing, synchronization and compiler choices are included. No counter evidence identifies the limiting factor here, so bank conflicts, cache effects and barriers are hypotheses to profile, not established explanations.
+
+Register tiling reduced median time by about 23.40% at 4096×256 and 28.83% at 1024×512, but increased it by about 66.32% at 257×65. It combines a 32×32 tile, 32×8 block, four accumulators per thread and reuse across outputs. This is an implementation-level comparison, not a controlled single-variable proof that one of those changes caused the improvement. The source expresses register-reuse intent; no compiler register report, occupancy measurement or profiler counter was captured to establish actual placement or pressure.
+
+## Follow-up validation and profiling
+
+Keep both recorded sessions immutable. Repeat the four-kernel sweep in independent sessions before generalizing beyond this GPU, workload, build and environment. Forty launches in one session do not establish a distribution across independent sessions, and the original run 02 must not supply a baseline denominator for run 03.
+
+When supported in the chosen WSL setup, use Nsight Compute to inspect global-load efficiency, cache behavior, barrier stalls, actual register usage and occupancy for the same inputs and build. Potential later work includes tile-size sweeps, symmetry-aware work reduction and cuBLAS comparison. None of those follow-ups is represented as implemented or measured here.

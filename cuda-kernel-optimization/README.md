@@ -6,7 +6,7 @@ This subproject is part of [Parallel Computing Lab](../README.md), alongside Ope
 
 **How It Works:** Given row-major input `X` with `m` samples and `n` features, each implementation computes `S[i,j] = sum(X[e,i] * X[e,j]) / m`. The first three assign one output to each thread. The register-tiled version assigns four output rows to each thread in a 32×8 block.
 
-**What I Verified:** The CPU reference tests and 50 host tile-layout/oracle cases pass; the CUDA host Python suite passes 34 tests. These checks do not execute CUDA. The original RTX 4060 WSL2 run passed CUDA compilation, eight GPU correctness shapes for the baseline and original tiled kernels, and Compute Sanitizer; it captured 180 samples across those two kernels. The run is pinned to the pre-optimization source at commit `d5a7070`. The new coalesced-load and register-tiled kernels have not yet been compiled or run on a GPU. See the [historical two-kernel run](results/rtx4060-wsl-run-02/README.md).
+**What I Verified:** The [RTX 4060 WSL2 four-kernel run](results/rtx4060-wsl-run-03/README.md), pinned to source commit `33c5536`, passed direct CUDA compilation, the host reference and 50 layout/oracle cases, 12 GPU correctness shapes for all four kernels, and Compute Sanitizer memcheck/racecheck. It retained 640 timing samples. Register tiling reached 1.405× baseline median / candidate median at 1024×512, but lost on the smallest case; coalesced-load tiling lost to baseline on all four shapes. These are single-session, kernel-only results. The separate record audit reproduced statistics and the SVG and passed 34 host Python tests without repeating GPU execution on macOS.
 
 ## Technical Highlights
 
@@ -35,10 +35,10 @@ Requirements: CMake 3.20+, a C++17 compiler, and an NVIDIA GPU with a compatible
 cmake -S . -B build -DCMAKE_BUILD_TYPE=Release -DCMAKE_CUDA_ARCHITECTURES=native -DPARALLEL_ENABLE_GPU_TESTS=ON
 cmake --build build -j
 ctest --test-dir build --output-on-failure
-./build/kernel_benchmark 257 65 15
+./build/kernel_benchmark 257 65 40
 ```
 
-`native` architecture selection requires CMake 3.24+; with CMake 3.20–3.23 replace it with the compute capability of the actual target GPU, such as `86` only for a matching device. The executable accepts positive `samples features repeats`; defaults are `257 65 15`. Full CPU validation costs `O(m*n²)` and intentionally limits practical benchmark sizes. Reduce dimensions before attempting large workloads.
+`native` architecture selection requires CMake 3.24+; with CMake 3.20–3.23 replace it with the compute capability of the actual target GPU, such as `86` only for a matching device. The executable accepts positive `samples features repeats`; defaults are `257 65 40`. Full CPU validation costs `O(m*n²)` and intentionally limits practical benchmark sizes. Reduce dimensions before attempting large workloads.
 
 For a CPU-only standalone build, configure with `-DPARALLEL_ENABLE_CUDA=OFF`. The integrated top-level build places GPU executables under `../build/cuda-kernel-optimization/` relative to this subproject. In the benchmark command below, replace the binary argument with `--binary ../build/cuda-kernel-optimization/kernel_benchmark` when using that build. GPU tests default to disabled; a successful CPU-only CTest run does not establish GPU coverage.
 
@@ -71,7 +71,7 @@ PYTHONDONTWRITEBYTECODE=1 python3 tests/run_all.py --only cuda-host --compiler c
 
 The host layout oracle covers tile mapping and partial-dimension arithmetic; it cannot validate device execution, synchronization, or GPU performance.
 
-The recorded baseline/tiled GPU run covered `(1,1), (1,17), (17,1), (7,9), (16,16), (17,19), (33,31), (257,65)`. The four-kernel correctness executable extends coverage to `(32,32), (33,33), (63,65), (65,63)` and compares every output against the CPU reference using `abs_error <= 2e-4 + 2e-4*abs(reference)`. The expanded executable and both new variants **still require compilation and GPU execution**. Run the integrated GPU validation command in [the execution guide](docs/gpu-execution.md); it gates timing on correctness and memcheck/racecheck.
+The recorded baseline/tiled GPU run covered `(1,1), (1,17), (17,1), (7,9), (16,16), (17,19), (33,31), (257,65)`. The four-kernel correctness executable extends coverage to `(32,32), (33,33), (63,65), (65,63)` and compares every output against the CPU reference using `abs_error <= 2e-4 + 2e-4*abs(reference)`. Run 03 compiled and executed that expanded correctness program for all four variants, then passed memcheck and racecheck on the same program. Run the integrated GPU validation command in [the execution guide](docs/gpu-execution.md); it gates timing on correctness and memcheck/racecheck.
 
 ```sh
 compute-sanitizer --tool memcheck ./build/correctness_test
@@ -80,17 +80,22 @@ compute-sanitizer --tool racecheck ./build/correctness_test
 
 ## Experimental Results
 
-The [frozen RTX 4060 WSL2 run](results/rtx4060-wsl-run-02/README.md) compiled the original baseline/tiled pair using CUDA 13.3 (`nvcc` 13.3.73, `-std=c++17 -O3 -lineinfo -arch=sm_89`). Its host reference, eight GPU correctness shapes for both kernels, and before/after-timing CPU comparisons passed. Compute Sanitizer reported zero memcheck errors and zero racecheck errors/warnings on that eight-shape correctness executable. Its source-hash audit matched the original source snapshot at commit `d5a7070`; later additions are outside that recorded run.
+The [schema-2 four-kernel run](results/rtx4060-wsl-run-03/README.md) used source snapshot `33c5536`, CUDA 13.3 (`nvcc` 13.3.73), `-std=c++17 -O3 -lineinfo -arch=sm_89`, ten warmups per kernel, rotating execution order, and 40 measured launches per kernel/shape. All four variants share the same build, inputs and measurement session.
 
-| Shape (samples × features) | Baseline median (ms) | Tiled median (ms) | Baseline / tiled |
-| --- | ---: | ---: | ---: |
-| 257 × 65 | 0.009120 | 0.010208 | 0.893× |
-| 1024 × 128 | 0.049152 | 0.048272 | 1.018× |
-| 4096 × 256 | 0.604160 | 0.582384 | 1.037× |
+| Shape (samples × features) | Baseline median (ms) | Tiled median (ms) | Coalesced median (ms) | Register median (ms) | Baseline / register |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 257 × 65 | 0.009216 | 0.010240 | 0.013360 | 0.015328 | 0.601× |
+| 1024 × 128 | 0.049152 | 0.048848 | 0.058176 | 0.046080 | 1.067× |
+| 4096 × 256 | 0.604032 | 0.582528 | 0.700080 | 0.462704 | 1.305× |
+| 1024 × 512 | 0.510624 | 0.490496 | 0.585712 | 0.363392 | 1.405× |
 
-Each row uses 30 measured launches per kernel after three warmups. Tiling took about 11.93% longer for the smallest shape, and about 1.79%/3.60% less time for the larger shapes. This is a single session with uncontrolled clocks, thermal state, power policy and background load; it is not a general speedup claim. Timings cover kernels only, excluding transfers and CPU work.
+Register tiling used about 6.25%, 23.40% and 28.83% less median kernel time on the three larger cases, but about 66.32% more on the smallest. The coalesced-load variant was slower than baseline on every shape, so improved load orientation in the source alone is insufficient evidence of an optimization. The register variant also changes tile dimensions, block shape and per-thread work; the sweep does not isolate which change explains its timings. No profiler counters or actual register-allocation measurements were captured.
 
-The separate macOS review checked all recorded result hashes, source correspondence after LF→CRLF conversion at the recorded source snapshot, independent statistics, raw/combined agreement, and byte-identical analyzer SVG regeneration. The CPU-only integrated Release build passed with CMake 3.31.10 and LLVM Clang 23.1.4; CTest passed 6/6, including the 50-case tile-layout oracle and 34 host Python tests. Synthetic fixtures are not GPU evidence. No CUDA execution has been performed for the four-kernel checkout on the Mac; the new kernels' CUDA compilation, device correctness, sanitizer coverage, and performance remain **Not Verified** until a fresh target-GPU run succeeds. The successful CPU-only CMake run disabled CUDA and does not verify CUDA kernel compilation or GPU CTest.
+The record audit checked 20 source SHA-256 values exactly against the LF bytes at `33c5536`, all three result hashes, all 640 positive finite samples, per-shape raw/combined agreement, independently calculated statistics, and byte-identical SVG regeneration. Fourteen recorded commands returned zero, including the host checks, 12-shape GPU test, memcheck and racecheck. The observed maximum absolute error was `1.4495293e-08` on 257×65 and zero on the three other supplied inputs for all four kernels; this does not establish exact arithmetic or accuracy for other inputs.
+
+The historical [run 02](results/rtx4060-wsl-run-02/README.md) remains immutable and separate: it measured the original two kernels under its own three-warmup/30-repeat policy and is not a denominator for the new variants. The separately verified CPU-only Release CMake build passed 6/6 CTests, including the 50-case layout oracle and 34 host Python tests. The record review passed those 34 Python tests again; it did not repeat CUDA execution on the Mac. CUDA-enabled CMake/GPU CTest remains unverified because the target run used direct `nvcc`. Generated target binaries are not committed, so their recorded hashes cannot be independently rehashed from this checkout.
+
+Clocks, thermal state, power policy and background load were not fixed. These are 40 repeated launches in one session, not 40 independent sessions. Timings exclude transfers and CPU reference work and do not establish end-to-end application throughput.
 
 ## Core Technical Challenges
 
@@ -98,11 +103,11 @@ The original coursework called the operation covariance despite omitting mean su
 
 ## Limitations & Future Improvements
 
-- Single-precision accumulation and fixed 16×16 blocks; tolerance is not a general guarantee for arbitrarily long reductions.
+- Single-precision accumulation and fixed per-variant tile/block configurations; tolerance is not a general guarantee for arbitrarily long reductions.
 - Kernel-only timings; transfer cost and application throughput are not measured.
-- Both kernels passed the recorded RTX 4060 validation; additional independent sweeps and controlled profiling are still needed to characterize performance beyond that session.
-- Compare all four implementations on the same fresh target-GPU session; profile load efficiency, cache behavior, barrier stalls, and register pressure before drawing causal conclusions.
-- Investigate symmetry and a cuBLAS comparison only after the new four-kernel results are validated.
+- All four kernels passed run 03 validation; additional independent sweeps and controlled profiling are still needed to characterize performance beyond that session.
+- Repeat the same four-way comparison in independent sessions; profile load efficiency, cache behavior, barrier stalls, actual register usage and occupancy before drawing causal conclusions.
+- Investigate symmetry-aware computation, tile-size sweeps and a cuBLAS comparison; these remain future work.
 - Publication remains subject to ownership and course-policy review. No license has been inferred or added.
 
 ## Implementation Decisions

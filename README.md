@@ -6,12 +6,12 @@ A parallel-computing lab spanning GPU kernels, CPU workload scheduling, and thre
 
 **How It Works:** Each experiment compares implementations of the same mathematical workload. CPU references or independent integer oracles check results; benchmark tools retain repeated samples and environment metadata.
 
-**What I Verified:** C++ thread and OpenMP builds/tests, the host CPU reference, host-side tile-layout checks, and CUDA analysis/runner tests passed on the review host. Release, ASan/UBSan and Monte Carlo ThreadSanitizer runs passed; ThreadSanitizer covered Monte Carlo only. The original RTX 4060 WSL2 run validated the direct baseline and original 16×16 tiled kernels across eight GPU shapes, passed Compute Sanitizer memcheck/racecheck, and retained 180 kernel timing samples. That record was audited separately and is tied to its pre-optimization source snapshot at commit [`d5a7070`](cuda-kernel-optimization/results/rtx4060-wsl-run-02/README.md). The two additional kernel variants and the expanded four-kernel CUDA run still require GPU validation. CMake/CTest execution remains unverified on the review host.
+**What I Verified:** C++ thread/OpenMP tests, the CPU reference, 50 host tile-layout cases, and 34 CUDA host Python tests passed. The CPU-only Release CMake build passed 6/6 CTests; this does not verify CUDA through CMake. On the recorded RTX 4060 WSL2 four-kernel run, direct `nvcc` compilation, 12 GPU correctness shapes for every variant, and Compute Sanitizer memcheck/racecheck passed. The run retained 640 timing samples across four shapes and four kernels. Register tiling reached a 1.405× baseline-to-candidate median ratio at 1024×512, while coalesced-load tiling was slower than baseline on every tested shape. This is one uncontrolled session, not an end-to-end or universal speedup. The records were audited on macOS without repeating GPU execution.
 
 ## Technical Highlights
 
 - Implement GPU data reuse with shared-memory tiles, guarded boundary loads, and unconditional block barriers.
-- Compare the original tile with coalesced global loads and register reuse as separate optimization steps; new variants stay unverified until measured on the target GPU.
+- Compare original tiling, contiguous cooperative loads, and four-output accumulation in one same-session experiment; retain negative as well as positive results.
 - Gate CUDA measurements on a double-precision CPU reference, error checks, warmup, synchronization, and repeated event timings.
 - Compare OpenMP static/dynamic/guided/auto policies using deterministic balanced and imbalanced workloads.
 - Compare serial, local-counter reduction, and per-hit mutex updates on identical samples across 1–32 workers.
@@ -36,11 +36,11 @@ CUDA is a subproject of this repository, with no nested Git repository. Its [REA
 
 For row-major input `X` with `m` samples and `n` features, all four kernels compute `S[i,j] = sum(X[e,i] * X[e,j]) / m`. This is an **uncentered second-moment matrix**, not mean-centered covariance. The direct baseline, 16×16 tiled kernel, and coalesced-load tile compute one output per thread. The 32×32 register-tiled kernel uses a 32×8 block and accumulates four output rows per thread.
 
-The original 16×16 tile reduces repeated loads within a block, but its left-tile global loads are strided. The coalesced-load variant changes that staging order while keeping the 16×16 output/reduction tile. The register-tiled variant stages 32×32 input tiles and reuses each right-hand value across four accumulators. These variants isolate two implementation ideas; their speed and resource costs are not known until they are measured on the RTX 4060.
+The original 16×16 tile reduces repeated loads within a block, but its left-tile global loads are strided. The coalesced-load variant changes that staging order while keeping the 16×16 output/reduction tile. The register-tiled variant stages 32×32 input tiles and reuses each right-hand value across four accumulators. The recorded four-way comparison tests these implementation ideas together. Contiguous cooperative loads alone did not improve these workloads; the register-tiled implementation combines a larger tile, a different block shape, and four-output reuse, so its result does not isolate any one change.
 
 The implemented correctness gate compares every GPU output against an FP64 CPU reference before and after timing, including non-multiple tile dimensions. FP32 accumulation uses `abs_error <= 2e-4 + 2e-4*abs(reference)` for the supplied bounded inputs; this tolerance is not a general guarantee for arbitrarily long reductions. CUDA APIs and launches are error checked. The current four-kernel workflow uses ten warmups, rotates kernel order across repetitions, and measures individual launches with CUDA events and stop-event synchronization.
 
-The frozen [RTX 4060 WSL2 run](cuda-kernel-optimization/results/rtx4060-wsl-run-02/README.md) compares only the original direct and 16×16 tiled kernels: 30 samples each at three shapes. It remains evidence for those two variants at commit `d5a7070`, not for the new kernels in the current checkout. Its shape-dependent kernel-only results do not establish application throughput. See [kernel methodology](cuda-kernel-optimization/docs/methodology.md) and [optimization decisions](cuda-kernel-optimization/docs/optimization.md) for the planned four-way comparison.
+The [four-kernel RTX 4060 WSL2 run](cuda-kernel-optimization/results/rtx4060-wsl-run-03/README.md) uses 40 samples per kernel at four shapes, ten warmups, and rotating order. All comparisons use the baseline from that same run. The [historical two-kernel run](cuda-kernel-optimization/results/rtx4060-wsl-run-02/README.md) stays unchanged and is not used as the denominator for new variants. Kernel-only timing excludes transfers and CPU reference work. See [methodology](cuda-kernel-optimization/docs/methodology.md) and [optimization decisions](cuda-kernel-optimization/docs/optimization.md).
 
 ## OpenMP Scheduling and Load Balancing
 
@@ -102,10 +102,10 @@ ctest --test-dir build -L gpu --output-on-failure
 | CUDA host reference and tile-layout oracle | Host reference tests passed; 50 layout/oracle cases passed with `clang++ -std=c++17 -O3 -Wall -Wextra -Wpedantic -Werror`; these are CPU-only checks, not GPU execution |
 | CUDA host Python tools | 34 unit tests passed, including analysis, four-kernel schema, and runner-safeguard coverage; synthetic fixtures are not performance evidence |
 | CPU benchmark tools | 28 validation tests passed; run with `PYTHONDONTWRITEBYTECODE=1 python3 tests/run_all.py --only benchmarks` (no C++ build or timing run) |
-| CMake/CTest execution | CPU-only Release configuration/build passed with CMake 3.31.10 and LLVM Clang 23.1.4; CTest passed 6/6 (`benchmark_tools`, `monte_carlo`, `scheduling`, `reference`, `cuda_tile_layout`, `cuda_analysis`). CUDA compilation/device tests were disabled and remain unverified. |
-| CUDA compilation and GPU correctness | Original two-kernel baseline run passed host reference, 8 GPU correctness shapes for those kernels, and per-run CPU checks; the new kernels need a fresh GPU run |
-| Compute Sanitizer | Original run: memcheck 0 errors; racecheck 0 errors/0 warnings on its 8-shape correctness executable; rerun both tools for all four kernels |
-| GPU performance evidence | Original run: 180 retained samples across 3 shapes × 2 kernels × 30 repetitions; it does not measure the two new variants |
+| CMake/CTest execution | CPU-only Release configuration/build passed with CMake 3.31.10 and LLVM Clang 23.1.4; CTest passed 6/6 (`benchmark_tools`, `monte_carlo`, `scheduling`, `reference`, `cuda_tile_layout`, `cuda_analysis`). CUDA targets were disabled in that CMake build; CUDA-enabled CMake/GPU CTest remains unverified, separately from the successful direct-`nvcc` run. |
+| CUDA compilation and GPU correctness | Run 03 direct `nvcc` build passed host reference, 50 layout cases, 12 GPU shapes for all four variants, and per-run CPU checks |
+| Compute Sanitizer | Run 03: memcheck 0 errors; racecheck 0 hazards/errors/warnings on the 12-shape, four-kernel correctness executable |
+| GPU performance evidence | Run 03: 640 samples = 4 shapes × 4 kernels × 40 launches; run 02 remains separate historical evidence |
 | Monte Carlo ThreadSanitizer | PASS: all 52 exact cases and 8 invalid-input cases, no diagnostics |
 | OpenMP/CUDA ThreadSanitizer | Not run; Monte Carlo TSan result does not cover these runtimes |
 
@@ -115,20 +115,21 @@ See [integration validation](docs/merge-validation.md) for the executed command 
 
 CPU measurements include thread/team creation and synchronization in the timed region; process startup and correctness-reference work are excluded. The runner warms each configuration once, shuffles repeat order deterministically, records metadata and executable hashes, and refuses to overwrite raw output. The existing [99-record smoke run](benchmarks/results/macos-arm64-smoke-2026-10-31-v3/README.md) is exploratory and uncontrolled; its legacy combined SVG should not be read as a comparison between unlike workloads.
 
-Use the [CPU Benchmark Guide](benchmarks/README.md) for build/run commands and the raw-measurement → derived-analysis workflow. It keeps Monte Carlo scaling, OpenMP uniform, and OpenMP tail-heavy visualizations separate and explains the provenance and limits of each output. CUDA build and measurement tools remain under `cuda-kernel-optimization/benchmarks/`; the [recorded GPU run](cuda-kernel-optimization/results/rtx4060-wsl-run-02/README.md) documents its correctness gates, raw samples, and limits.
+Use the [CPU Benchmark Guide](benchmarks/README.md) for build/run commands and the raw-measurement → derived-analysis workflow. It keeps Monte Carlo scaling, OpenMP uniform, and OpenMP tail-heavy visualizations separate and explains the provenance and limits of each output. CUDA build and measurement tools remain under `cuda-kernel-optimization/benchmarks/`; the [four-kernel GPU run](cuda-kernel-optimization/results/rtx4060-wsl-run-03/README.md) documents its correctness gates, raw samples, and limits.
 
 ## Results and Limitations
 
 At 100,000 samples, the retained serial median was 0.083 ms, local-counter medians were 0.121 ms at 4 workers and 0.307 ms at 32 workers, and mutex mode at 4 workers was 1.812 ms. These exploratory values show that this small workload did not amortize overhead; they are not a sustained-throughput or general scalability claim.
 
-RTX 4060 WSL2 results (`nvcc` 13.3.73, `-O3 -lineinfo -arch=sm_89`), medians of 30 kernel launches per implementation:
+RTX 4060 WSL2 run 03 (`nvcc` 13.3.73, `-O3 -lineinfo -arch=sm_89`), median kernel times in milliseconds from 40 launches per kernel:
 
-| Input shape (samples × features) | Baseline (ms) | Tiled (ms) | Baseline / tiled |
-| --- | ---: | ---: | ---: |
-| 257 × 65 | 0.009120 | 0.010208 | 0.893× |
-| 1024 × 128 | 0.049152 | 0.048272 | 1.018× |
-| 4096 × 256 | 0.604160 | 0.582384 | 1.037× |
+| Input shape (samples × features) | Baseline | Original tiled | Coalesced tiled | Register tiled | Baseline / register |
+| --- | ---: | ---: | ---: | ---: | ---: |
+| 257 × 65 | 0.009216 | 0.010240 | 0.013360 | 0.015328 | 0.601× |
+| 1024 × 128 | 0.049152 | 0.048848 | 0.058176 | 0.046080 | 1.067× |
+| 4096 × 256 | 0.604032 | 0.582528 | 0.700080 | 0.462704 | 1.305× |
+| 1024 × 512 | 0.510624 | 0.490496 | 0.585712 | 0.363392 | 1.405× |
 
-In this one session, the original tiled kernel took about 11.93% longer on the smallest case and about 1.79%/3.60% less time on the larger cases. GPU clocks, thermal state, power policy and background load were not fixed. The new variants have no performance results yet; the old comparison must not be used as evidence for them. See the [raw samples, spread, and provenance](cuda-kernel-optimization/results/rtx4060-wsl-run-02/README.md).
+Register tiling reduced median kernel time by about 23.40% at 4096×256 and 28.83% at 1024×512, but took about 66.32% longer for 257×65. The coalesced-load variant was slower than baseline on all four shapes: changing the load orientation alone did not pay off in this session. No profiler counters establish the cause, and actual register allocation was not measured. Clocks, thermal state, power policy and background load were uncontrolled; 40 launches are not 40 independent sessions. These kernel-only results do not establish CPU/GPU or end-to-end application speedup. See the [full ablation, spread, and provenance](cuda-kernel-optimization/results/rtx4060-wsl-run-03/README.md).
 
 The original course reports/notebooks and supplied OpenMP function remain outside this repository. No license has been assigned automatically; remaining ownership/course-policy review and final author review are tracked separately before publication.
