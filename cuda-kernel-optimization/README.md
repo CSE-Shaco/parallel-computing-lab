@@ -110,7 +110,7 @@ The original coursework called the operation covariance despite omitting mean su
 - All four kernels passed run 03 and five repeated sweeps; controlled conditions and profiling are still needed to characterize behavior beyond that same-host/day sequence.
 - Repeat the same four-way comparison in independent sessions; profile load efficiency, cache behavior, barrier stalls, actual register usage and occupancy before drawing causal conclusions.
 - Investigate symmetry-aware computation, tile-size sweeps and a cuBLAS comparison; these remain future work.
-- Publication remains subject to ownership and course-policy review. No license has been inferred or added.
+- This CUDA project is published as part of the `CSE-Shaco/parallel-computing-lab` repository. The repository excludes original course reports and supplied code; publication does not certify course-policy treatment of original submissions. No license has been inferred or added.
 
 ## Implementation Decisions
 
