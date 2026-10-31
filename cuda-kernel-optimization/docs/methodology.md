@@ -1,6 +1,6 @@
 # Measurement methodology
 
-1. Build in Release on the target NVIDIA GPU; record the exact CMake commands, architecture and flags. Kernel target explicitly adds `-O3`; no fast-math flag is added.
+1. Build optimized binaries on the target NVIDIA GPU using CMake Release or the direct-compiler runner; record the exact commands, architecture and flags. Kernel target explicitly adds `-O3`; no fast-math flag is added.
 2. Run all CPU/GPU correctness cases and Compute Sanitizer. A compile or runtime failure is a failed validation, never a timing sample.
 3. Use identical deterministic input, dimensions and block size for both kernels. Input values include negatives and nonzero means.
 4. Allocate once, transfer input once, generate the double-precision CPU reference outside timing, and validate both kernels. Initialize output to a NaN byte pattern before each validation so unwritten outputs fail.
@@ -11,4 +11,4 @@
 
 JSON records capture GPU name, compute capability, CUDA compiler/runtime/driver versions, shape, block size, warmup count and correctness status. The Python wrapper adds timestamp, host, executable SHA-256 and user-supplied build options. Existing result and figure files are never overwritten by these scripts. Mixed GPU/runtime/compiler environments and duplicate shapes are rejected by the analyzer; analyze independent sweeps separately. Preserve GPU operating mode, power/clock configuration and competing workload notes alongside any published experiment. Run repeated independent sweeps before making broad optimization claims.
 
-No results have been measured on a CUDA device in the current environment. A graph tool cannot establish whether a supplied JSON file is authentic; only pass the output of a successful target-device run.
+The [recorded RTX 4060 WSL2 run](../results/rtx4060-wsl-run-02/README.md) follows the direct-compiler workflow and contains three shapes × two kernels × 30 samples. Its result hashes, statistics, logs, source correspondence and regenerated analysis were checked separately on macOS; this review did not repeat GPU execution. The source hashes reflect Windows CRLF checkout bytes and match the repository LF files after exact LF→CRLF conversion. Recorded target binary hashes are provenance, not a substitute for retained binaries or an independent rerun. A graph tool alone cannot establish result authenticity; only analyze output from a successful target-device run.

@@ -6,7 +6,7 @@ This subproject is part of [Parallel Computing Lab](../README.md), alongside Ope
 
 **How It Works:** Given row-major input `X` with `m` samples and `n` features, both kernels compute `S[i,j] = sum(X[e,i] * X[e,j]) / m`. Each thread owns one output element. The tiled implementation reuses input values within a 16×16 block.
 
-**What I Verified:** The CPU reference matches a hand-computed example and rejects incorrect output, including seven size/non-finite regression cases; six Python analysis tests reject invalid or unverified timing data. **CUDA compilation, GPU correctness and performance: Not Verified.** No GPU speedup is claimed.
+**What I Verified:** The CPU reference matches a hand-computed example and rejects incorrect output, including seven size/non-finite regression cases; six Python analysis tests reject invalid or unverified timing data. **The recorded RTX 4060 WSL2 run passed CUDA compilation, GPU correctness, and Compute Sanitizer and captured 180 kernel timing samples.** The supplied results have been audited on macOS without repeating GPU execution. Performance differences are modest and shape-dependent; see [the measured run](results/rtx4060-wsl-run-02/README.md).
 
 ## Technical Highlights
 
@@ -71,7 +71,17 @@ compute-sanitizer --tool racecheck ./build/correctness_test
 
 ## Experimental Results
 
-The host reference test, seven non-finite/size-rejection regression cases, and six Python analysis tests pass. No GPU measurements are included: CUDA Toolkit, NVIDIA GPU and CMake were unavailable in the current environment. The Python tests use clearly identified synthetic inputs solely to test analysis behavior; they do not produce result artifacts. CUDA compilation, GPU correctness, Compute Sanitizer, and GPU performance remain **Not Verified**; no speedup is claimed.
+The [retained RTX 4060 WSL2 run](results/rtx4060-wsl-run-02/README.md) compiled the host reference, correctness test and benchmark using CUDA 13.3 (`nvcc` 13.3.73, `-std=c++17 -O3 -lineinfo -arch=sm_89`). Its host reference, eight GPU correctness shapes for both kernels, and before/after-timing CPU comparisons passed. Compute Sanitizer reported zero memcheck errors and zero racecheck errors/warnings on the eight-shape correctness executable.
+
+| Shape (samples × features) | Baseline median (ms) | Tiled median (ms) | Baseline / tiled |
+| --- | ---: | ---: | ---: |
+| 257 × 65 | 0.009120 | 0.010208 | 0.893× |
+| 1024 × 128 | 0.049152 | 0.048272 | 1.018× |
+| 4096 × 256 | 0.604160 | 0.582384 | 1.037× |
+
+Each row uses 30 measured launches per kernel after three warmups. Tiling took about 11.93% longer for the smallest shape, and about 1.79%/3.60% less time for the larger shapes. This is a single session with uncontrolled clocks, thermal state, power policy and background load; it is not a general speedup claim. Timings cover kernels only, excluding transfers and CPU work.
+
+The separate macOS review checked all recorded result hashes, exact source correspondence after LF→CRLF conversion, independent statistics, raw/combined agreement, and byte-identical analyzer SVG regeneration. All 14 host Python tests (6 analysis, 8 runner safeguards) passed. Synthetic test fixtures are not GPU evidence. GPU execution was not repeated on the Mac, retained executable hashes cannot be rechecked without the local target binaries, and CMake/CTest remain **Not Verified**.
 
 ## Core Technical Challenges
 
@@ -81,7 +91,7 @@ The original coursework called the operation covariance despite omitting mean su
 
 - Single-precision accumulation and fixed 16×16 blocks; tolerance is not a general guarantee for arbitrarily long reductions.
 - Kernel-only timings; transfer cost and application throughput are not measured.
-- The two kernels are prototypes pending CUDA compilation, GPU tests, sanitizer runs and controlled benchmarking.
+- Both kernels passed the recorded RTX 4060 validation; additional independent sweeps and controlled profiling are still needed to characterize performance beyond that session.
 - Investigate tile shapes, coalescing, symmetry and a cuBLAS comparison only after correctness and baseline measurements are established.
 - Publication remains subject to ownership and course-policy review. No license has been inferred or added.
 

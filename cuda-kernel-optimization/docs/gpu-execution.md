@@ -64,5 +64,12 @@ The runner does not lock GPU clocks, thermal state, power policy, or background
 load. Repeats describe the selected session; shared-host measurements do not
 establish a universal performance advantage.
 
-No GPU measurement has been executed in the current macOS environment. Host-only
-runner safeguard tests do not verify CUDA compilation or device execution.
+A successful [RTX 4060 WSL2 measurement](../results/rtx4060-wsl-run-02/README.md)
+is retained in this repository. Its eight-shape correctness executable passed
+memcheck and racecheck before timing. The macOS review checked the supplied
+records and reran host-only tests/analysis; it did not execute CUDA. Host-only
+runner safeguard tests alone do not verify CUDA compilation or device execution.
+
+The recorded source hashes use Windows CRLF checkout bytes. They match every
+corresponding LF repository file after exact LF→CRLF conversion; retain this
+distinction when comparing provenance across operating systems.
