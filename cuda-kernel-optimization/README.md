@@ -6,7 +6,7 @@ This subproject is part of [Parallel Computing Lab](../README.md), alongside Ope
 
 **How It Works:** Given row-major input `X` with `m` samples and `n` features, each implementation computes `S[i,j] = sum(X[e,i] * X[e,j]) / m`. The first three assign one output to each thread. The register-tiled version assigns four output rows to each thread in a 32×8 block.
 
-**What I Verified:** The [RTX 4060 WSL2 four-kernel run](results/rtx4060-wsl-run-03/README.md), pinned to source commit `33c5536`, passed direct CUDA compilation, the host reference and 50 layout/oracle cases, 12 GPU correctness shapes for all four kernels, and Compute Sanitizer memcheck/racecheck. It retained 640 timing samples. Register tiling reached 1.405× baseline median / candidate median at 1024×512, but lost on the smallest case; coalesced-load tiling lost to baseline on all four shapes. These are single-session, kernel-only results. The separate record audit reproduced statistics and the SVG and passed 34 host Python tests without repeating GPU execution on macOS.
+**What I Verified:** Five consecutive [RTX 4060 WSL2 sweeps](results/rtx4060-repeat-20261031T095734Z-analysis/README.md), with the same recorded source/device/compiler/policy, each passed direct CUDA compilation, host reference/50 layout cases, 12 GPU shapes for all four variants, and Compute Sanitizer memcheck/racecheck. They retained 3,200 samples. The register-tiled kernel's five-sweep median paired ratio was 1.406× at 1024×512 (range 1.390–1.406×), but it lost on the smallest shape; coalesced tiling lost on every shape in every sweep. The current host Python suite passes 51 tests. Post-hoc analysis and record review do not repeat GPU execution on macOS or establish end-to-end speedup.
 
 ## Technical Highlights
 
@@ -63,7 +63,7 @@ clang++ -std=c++17 -Wall -Wextra -Werror -I include \
 PYTHONDONTWRITEBYTECODE=1 python3 -m unittest discover -s tests -p 'test_*.py'
 ```
 
-The integrated runner also compiles the host tile-layout oracle and runs all 34 host Python tests from the repository root:
+The integrated runner also compiles the host tile-layout oracle and runs the current 51 host Python tests from the repository root:
 
 ```sh
 PYTHONDONTWRITEBYTECODE=1 python3 tests/run_all.py --only cuda-host --compiler clang++
@@ -80,22 +80,24 @@ compute-sanitizer --tool racecheck ./build/correctness_test
 
 ## Experimental Results
 
-The [schema-2 four-kernel run](results/rtx4060-wsl-run-03/README.md) used source snapshot `33c5536`, CUDA 13.3 (`nvcc` 13.3.73), `-std=c++17 -O3 -lineinfo -arch=sm_89`, ten warmups per kernel, rotating execution order, and 40 measured launches per kernel/shape. All four variants share the same build, inputs and measurement session.
+The [repeated-sweep analysis](results/rtx4060-repeat-20261031T095734Z-analysis/README.md) covers five consecutive fresh-process sessions on the same RTX 4060 WSL2 host. Each session uses ten warmups, rotating order and 40 launches per kernel at four shapes. All 20 measured source files match snapshot `1f3a10d`; CUDA 13.3 (`nvcc` 13.3.73), Windows driver 610.88, and compiler flags `-std=c++17 -O3 -lineinfo -arch=sm_89` agree.
 
-| Shape (samples × features) | Baseline median (ms) | Tiled median (ms) | Coalesced median (ms) | Register median (ms) | Baseline / register |
-| --- | ---: | ---: | ---: | ---: | ---: |
-| 257 × 65 | 0.009216 | 0.010240 | 0.013360 | 0.015328 | 0.601× |
-| 1024 × 128 | 0.049152 | 0.048848 | 0.058176 | 0.046080 | 1.067× |
-| 4096 × 256 | 0.604032 | 0.582528 | 0.700080 | 0.462704 | 1.305× |
-| 1024 × 512 | 0.510624 | 0.490496 | 0.585712 | 0.363392 | 1.405× |
+For each sweep and shape, divide that sweep's baseline median by the candidate median. The table reports the median/range of those five paired ratios, not ratios of pooled or cross-session medians. Baseline is 1.000×.
 
-Register tiling used about 6.25%, 23.40% and 28.83% less median kernel time on the three larger cases, but about 66.32% more on the smallest. The coalesced-load variant was slower than baseline on every shape, so improved load orientation in the source alone is insufficient evidence of an optimization. The register variant also changes tile dimensions, block shape and per-thread work; the sweep does not isolate which change explains its timings. No profiler counters or actual register-allocation measurements were captured.
+| Shape | Original tile: median [range] | Coalesced tile: median [range] | Register tile: median [range] |
+| --- | ---: | ---: | ---: |
+| 257 × 65 | 0.906× [0.901–0.913] | 0.692× [0.688–0.692] | 0.600× [0.596–0.600] |
+| 1024 × 128 | 1.007× [1.005–1.008] | 0.845× [0.843–0.846] | 1.067× [1.066–1.067] |
+| 4096 × 256 | 1.035× [1.035–1.037] | 0.862× [0.861–0.863] | 1.304× [1.302–1.306] |
+| 1024 × 512 | 1.042× [1.040–1.042] | 0.872× [0.872–0.873] | 1.406× [1.390–1.406] |
 
-The record audit checked 20 source SHA-256 values exactly against the LF bytes at `33c5536`, all three result hashes, all 640 positive finite samples, per-shape raw/combined agreement, independently calculated statistics, and byte-identical SVG regeneration. Fourteen recorded commands returned zero, including the host checks, 12-shape GPU test, memcheck and racecheck. The observed maximum absolute error was `1.4495293e-08` on 257×65 and zero on the three other supplied inputs for all four kernels; this does not establish exact arithmetic or accuracy for other inputs.
+Register tiling won all five paired comparisons on each larger shape, with median paired runtime reductions of about 6.25%, 23.29% and 28.85%. It lost all five comparisons on 257×65. Coalesced tiling lost on every shape in every sweep. These negative outcomes are retained alongside the best ratio; the experiment does not isolate a causal effect of load orientation, tile size, block shape, accumulator reuse or actual register allocation.
 
-The historical [run 02](results/rtx4060-wsl-run-02/README.md) remains immutable and separate: it measured the original two kernels under its own three-warmup/30-repeat policy and is not a denominator for the new variants. The separately verified CPU-only Release CMake build passed 6/6 CTests, including the 50-case layout oracle and 34 host Python tests. The record review passed those 34 Python tests again; it did not repeat CUDA execution on the Mac. CUDA-enabled CMake/GPU CTest remains unverified because the target run used direct `nvcc`. Generated target binaries are not committed, so their recorded hashes cannot be independently rehashed from this checkout.
+The reusable `benchmarks/analyze_repeated_runs.py` checks result hashes, complete execution/sanitizer gates, raw/combined agreement, independently derived summaries, matching recorded source/environment/configuration/build options and the full shape/repetition matrix. It refuses copied execution records, invalid samples, incompatible inputs, existing output, and output inside measured input directories. The [per-run CSV](results/rtx4060-repeat-20261031T095734Z-analysis/per-run.csv) retains all 80 sweep/shape/kernel comparisons; [provenance](results/rtx4060-repeat-20261031T095734Z-analysis/provenance.json) hashes all 180 inputs. Rebuilt binary hashes are retained per session, not required to match; binaries themselves are not in Git.
 
-Clocks, thermal state, power policy and background load were not fixed. These are 40 repeated launches in one session, not 40 independent sessions. Timings exclude transfers and CPU reference work and do not establish end-to-end application throughput.
+All five runs passed the 12-shape correctness executable, host checks and memcheck/racecheck before measurement. A separate raw-data audit confirmed source/result hashes, all 3,200 finite samples and paired statistics; 51 host Python tests passed (34 previous plus 17 repeated-analysis tests). The earlier CPU-only Release CMake build passed 6/6 CTests; CUDA-enabled CMake/GPU CTest remains unverified by these direct-`nvcc` runs. The record reviewer did not execute CUDA on the Mac.
+
+Historical [run 02](results/rtx4060-wsl-run-02/README.md) and [run 03](results/rtx4060-wsl-run-03/README.md) remain immutable and separate, with their own source snapshots and policies. Neither supplies the baseline for the five-sweep ratios. Clocks, thermal state, power policy and background load were uncontrolled. Consecutive same-host sweeps are not independent machines or thermal states; the observed ranges are not confidence intervals or significance tests. Kernel-only times exclude transfer and CPU work and do not establish application throughput.
 
 ## Core Technical Challenges
 
@@ -105,7 +107,7 @@ The original coursework called the operation covariance despite omitting mean su
 
 - Single-precision accumulation and fixed per-variant tile/block configurations; tolerance is not a general guarantee for arbitrarily long reductions.
 - Kernel-only timings; transfer cost and application throughput are not measured.
-- All four kernels passed run 03 validation; additional independent sweeps and controlled profiling are still needed to characterize performance beyond that session.
+- All four kernels passed run 03 and five repeated sweeps; controlled conditions and profiling are still needed to characterize behavior beyond that same-host/day sequence.
 - Repeat the same four-way comparison in independent sessions; profile load efficiency, cache behavior, barrier stalls, actual register usage and occupancy before drawing causal conclusions.
 - Investigate symmetry-aware computation, tile-size sweeps and a cuBLAS comparison; these remain future work.
 - Publication remains subject to ownership and course-policy review. No license has been inferred or added.

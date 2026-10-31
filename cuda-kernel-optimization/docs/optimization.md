@@ -44,8 +44,21 @@ The coalesced-load variant lost to baseline on every tested shape. That negative
 
 Register tiling reduced median time by about 23.40% at 4096×256 and 28.83% at 1024×512, but increased it by about 66.32% at 257×65. It combines a 32×32 tile, 32×8 block, four accumulators per thread and reuse across outputs. This is an implementation-level comparison, not a controlled single-variable proof that one of those changes caused the improvement. The source expresses register-reuse intent; no compiler register report, occupancy measurement or profiler counter was captured to establish actual placement or pressure.
 
+## Repeated-sweep outcome
+
+The [five-sweep paired analysis](../results/rtx4060-repeat-20261031T095734Z-analysis/README.md) repeated the same four-way experiment on the same host/day. It summarizes a candidate's baseline-relative median-time ratio within each sweep, then reports the median/range of those five ratios:
+
+| Shape | Original tile | Coalesced tile | Register tile | Register ratio range |
+| --- | ---: | ---: | ---: | ---: |
+| 257 × 65 | 0.906× | 0.692× | 0.600× | 0.596–0.600× |
+| 1024 × 128 | 1.007× | 0.845× | 1.067× | 1.066–1.067× |
+| 4096 × 256 | 1.035× | 0.862× | 1.304× | 1.302–1.306× |
+| 1024 × 512 | 1.042× | 0.872× | 1.406× | 1.390–1.406× |
+
+Coalesced tiling remains below baseline on every shape in every sweep; register tiling remains below baseline on the smallest case and above it in all five sweeps on each larger case. This strengthens the descriptive repeatability evidence for those workloads, while leaving the negative ablation and causal uncertainty intact. The best five-sweep median ratio 1.406× corresponds to about 28.85% median paired runtime reduction, not a 40.6% reduction. No launch pooling, cross-session denominator or best-run selection is used.
+
 ## Follow-up validation and profiling
 
-Keep both recorded sessions immutable. Repeat the four-kernel sweep in independent sessions before generalizing beyond this GPU, workload, build and environment. Forty launches in one session do not establish a distribution across independent sessions, and the original run 02 must not supply a baseline denominator for run 03.
+Keep all recorded inputs immutable. The five consecutive sweeps are still one same-host/day sequence without controlled thermal/clock/background-load states. Further controlled experiments and profiling are needed before generalizing beyond this GPU, workload and environment. Forty launches within a sweep do not create forty independent sessions, and historical sessions must not supply denominators for new sweeps.
 
 When supported in the chosen WSL setup, use Nsight Compute to inspect global-load efficiency, cache behavior, barrier stalls, actual register usage and occupancy for the same inputs and build. Potential later work includes tile-size sweeps, symmetry-aware work reduction and cuBLAS comparison. None of those follow-ups is represented as implemented or measured here.

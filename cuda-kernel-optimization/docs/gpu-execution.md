@@ -76,6 +76,20 @@ git diff --cached --stat
 
 Verify that only this successful run's evidence is staged and that `build/` executables are absent. Then commit and push the run. Keep the historical [run 02](../results/rtx4060-wsl-run-02/README.md) unchanged: it measures only the original baseline/tiled pair at source snapshot `d5a7070`.
 
+## Analyze repeated sweeps without pooling launches
+
+The retained [five-sweep analysis](../results/rtx4060-repeat-20261031T095734Z-analysis/README.md) uses this post-hoc command, with a new destination for reproduction:
+
+```sh
+python3 benchmarks/analyze_repeated_runs.py \
+  results/rtx4060-repeat-20261031T095734Z-{1,2,3,4,5} \
+  --out results/rechecked-repeat-analysis
+```
+
+The tool accepts at least two unique completed schema-2 records with matching recorded source, environment, compiler options and policy. It verifies result hashes, command/log gates, raw/summary agreement and full variant/sample metadata before aggregation. It refuses copied execution records, incompatible evidence, invalid samples, existing output or output inside a measured input directory. Every rebuilt binary identity is retained individually; matching source/options do not require byte-identical executables.
+
+It writes `summary.json`, `per-run.csv`, `provenance.json` and `stability.svg`. The analysis unit is a **per-sweep baseline median / candidate median**, then median/min/max over sweeps. It never pools all launch samples to infer independence or statistical significance. Preserve all input records and review relative labels/provenance before committing derived output. The host-only synthetic test suite can be run with `python3 -m unittest discover -s tests -p 'test_*.py'`.
+
 ## Measurement scope
 
 The kernels compute the uncentered second-moment matrix `XᵀX/m`; CPU reference work and host/device transfers are outside the timed region. The four-kernel analyzer reports baseline median divided by each candidate median, so a ratio above 1 means the candidate's median was lower in that sweep. These are kernel-only measurements, not end-to-end application speedups.
