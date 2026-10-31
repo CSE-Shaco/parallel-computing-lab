@@ -1,0 +1,306 @@
+[
+  {
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "kernels": {
+      "baseline": {
+        "baseline_speedup": 1.0,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.0378880017,
+        "median_ms": 0.00921600033,
+        "min_ms": 0.00819199998,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 1
+      },
+      "coalesced_tiled": {
+        "baseline_speedup": 0.6923077274986137,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.0184000004,
+        "median_ms": 0.0133119998,
+        "min_ms": 0.0132480003,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 16
+      },
+      "register_tiled": {
+        "baseline_speedup": 0.600000037109376,
+        "block": [
+          32,
+          8
+        ],
+        "count": 40,
+        "max_ms": 0.0204799995,
+        "median_ms": 0.0153599996,
+        "min_ms": 0.0143360002,
+        "output_tile": [
+          32,
+          32
+        ],
+        "outputs_per_thread": 4,
+        "reduction_tile": 32
+      },
+      "tiled": {
+        "baseline_speedup": 0.9128367952018779,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.0149440002,
+        "median_ms": 0.010096000050000001,
+        "min_ms": 0.00921600033,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 16
+      }
+    },
+    "schema_version": 2,
+    "shape": "257x65",
+    "speedup_definition": "baseline median / candidate median"
+  },
+  {
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "kernels": {
+      "baseline": {
+        "baseline_speedup": 1.0,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.0501759984,
+        "median_ms": 0.0491520017,
+        "min_ms": 0.0481280014,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 1
+      },
+      "coalesced_tiled": {
+        "baseline_speedup": 0.846047963779702,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.0583680011,
+        "median_ms": 0.05809599905,
+        "min_ms": 0.0573440008,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 16
+      },
+      "register_tiled": {
+        "baseline_speedup": 1.0666666873553239,
+        "block": [
+          32,
+          8
+        ],
+        "count": 40,
+        "max_ms": 0.0511999987,
+        "median_ms": 0.0460800007,
+        "min_ms": 0.0458879992,
+        "output_tile": [
+          32,
+          32
+        ],
+        "outputs_per_thread": 4,
+        "reduction_tile": 32
+      },
+      "tiled": {
+        "baseline_speedup": 1.0068830405093911,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.0532479994,
+        "median_ms": 0.0488159992,
+        "min_ms": 0.0481280014,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 16
+      }
+    },
+    "schema_version": 2,
+    "shape": "1024x128",
+    "speedup_definition": "baseline median / candidate median"
+  },
+  {
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "kernels": {
+      "baseline": {
+        "baseline_speedup": 1.0,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.609247983,
+        "median_ms": 0.603968024,
+        "min_ms": 0.601087987,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 1
+      },
+      "coalesced_tiled": {
+        "baseline_speedup": 0.862673416624624,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.723968029,
+        "median_ms": 0.700112015,
+        "min_ms": 0.699392021,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 16
+      },
+      "register_tiled": {
+        "baseline_speedup": 1.3055719131469123,
+        "block": [
+          32,
+          8
+        ],
+        "count": 40,
+        "max_ms": 0.500735998,
+        "median_ms": 0.46260800950000003,
+        "min_ms": 0.461824,
+        "output_tile": [
+          32,
+          32
+        ],
+        "outputs_per_thread": 4,
+        "reduction_tile": 32
+      },
+      "tiled": {
+        "baseline_speedup": 1.0367766650333108,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.586751997,
+        "median_ms": 0.5825439985,
+        "min_ms": 0.581503987,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 16
+      }
+    },
+    "schema_version": 2,
+    "shape": "4096x256",
+    "speedup_definition": "baseline median / candidate median"
+  },
+  {
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "kernels": {
+      "baseline": {
+        "baseline_speedup": 1.0,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.608255982,
+        "median_ms": 0.5764320195,
+        "min_ms": 0.575456023,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 1
+      },
+      "coalesced_tiled": {
+        "baseline_speedup": 0.87276824074255,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.687103987,
+        "median_ms": 0.6604640185,
+        "min_ms": 0.659456015,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 16
+      },
+      "register_tiled": {
+        "baseline_speedup": 1.3899306059267231,
+        "block": [
+          32,
+          8
+        ],
+        "count": 40,
+        "max_ms": 0.421855986,
+        "median_ms": 0.414719999,
+        "min_ms": 0.413695991,
+        "output_tile": [
+          32,
+          32
+        ],
+        "outputs_per_thread": 4,
+        "reduction_tile": 32
+      },
+      "tiled": {
+        "baseline_speedup": 1.0424479915209197,
+        "block": [
+          16,
+          16
+        ],
+        "count": 40,
+        "max_ms": 0.655103981,
+        "median_ms": 0.552959979,
+        "min_ms": 0.551935971,
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 16
+      }
+    },
+    "schema_version": 2,
+    "shape": "1024x512",
+    "speedup_definition": "baseline median / candidate median"
+  }
+]

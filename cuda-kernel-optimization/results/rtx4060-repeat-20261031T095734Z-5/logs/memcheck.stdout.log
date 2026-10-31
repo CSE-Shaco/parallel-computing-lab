@@ -1,0 +1,3 @@
+========= COMPUTE-SANITIZER
+12 shapes passed for baseline, tiled, coalesced_tiled and register_tiled kernels
+========= ERROR SUMMARY: 0 errors
