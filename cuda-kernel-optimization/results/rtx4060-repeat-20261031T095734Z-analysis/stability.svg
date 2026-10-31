@@ -1,0 +1,148 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1120" height="680" viewBox="0 0 1120 680">
+<rect width="100%" height="100%" fill="#f5f7fa"/>
+<g font-family="system-ui,sans-serif" font-size="13" fill="#172b42">
+<text x="28" y="30" font-size="21" font-weight="700">Repeated GPU sweeps: paired median-time ratios</text>
+<text x="28" y="55">Baseline median / candidate median. Above 1 = lower candidate kernel time.</text>
+<text x="28" y="76">5 points per row; line = range, thick mark = median. No launch-sample pooling.</text>
+<rect x="20" y="98" width="535" height="252" rx="10" fill="white" stroke="#dce3eb"/>
+<text x="36" y="125" font-size="17" font-weight="650">257x65</text>
+<path d="M336.818,138 V280" stroke="#687e96" stroke-dasharray="4 4"/>
+<text x="36" y="163">Original tile</text>
+<path d="M305.896,159 H309.481" stroke="#bb641a" stroke-width="2"/>
+<circle cx="305.896" cy="155.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 0.901408479×</title></circle>
+<circle cx="307.492" cy="157.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 0.906497607×</title></circle>
+<circle cx="309.481" cy="159.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 0.912836795×</title></circle>
+<circle cx="307.230" cy="161.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 0.905660392×</title></circle>
+<circle cx="307.677" cy="163.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 0.907086642×</title></circle>
+<path d="M307.492,150 V168" stroke="#bb641a" stroke-width="3"/>
+<text x="180" y="181" font-size="11" fill="#53677e">0.906× [0.901, 0.913]</text>
+<text x="36" y="212">Coalesced tile</text>
+<path d="M238.807,208 H240.315" stroke="#007f71" stroke-width="2"/>
+<circle cx="240.315" cy="204.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 0.692307727×</title></circle>
+<circle cx="238.807" cy="206.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 0.687499998×</title></circle>
+<circle cx="240.315" cy="208.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 0.692307727×</title></circle>
+<circle cx="240.315" cy="210.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 0.692307727×</title></circle>
+<circle cx="239.535" cy="212.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 0.689820374×</title></circle>
+<path d="M240.315,199 V217" stroke="#007f71" stroke-width="3"/>
+<text x="180" y="230" font-size="11" fill="#53677e">0.692× [0.687, 0.692]</text>
+<text x="36" y="261">Register tile</text>
+<path d="M210.057,257 H211.364" stroke="#7550ad" stroke-width="2"/>
+<circle cx="211.364" cy="253.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 0.600000037×</title></circle>
+<circle cx="210.057" cy="255.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 0.595833338×</title></circle>
+<circle cx="211.364" cy="257.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 0.600000037×</title></circle>
+<circle cx="211.364" cy="259.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 0.600000037×</title></circle>
+<circle cx="211.364" cy="261.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 0.600000037×</title></circle>
+<path d="M211.364,248 V266" stroke="#7550ad" stroke-width="3"/>
+<text x="180" y="279" font-size="11" fill="#53677e">0.600× [0.596, 0.600]</text>
+<text x="180.000" y="318" text-anchor="middle" font-size="11" fill="#53677e">0.50</text>
+<text x="266.250" y="318" text-anchor="middle" font-size="11" fill="#53677e">0.78</text>
+<text x="352.500" y="318" text-anchor="middle" font-size="11" fill="#53677e">1.05</text>
+<text x="438.750" y="318" text-anchor="middle" font-size="11" fill="#53677e">1.33</text>
+<text x="525.000" y="318" text-anchor="middle" font-size="11" fill="#53677e">1.60</text>
+<rect x="570" y="98" width="535" height="252" rx="10" fill="white" stroke="#dce3eb"/>
+<text x="586" y="125" font-size="17" font-weight="650">1024x128</text>
+<path d="M886.818,138 V280" stroke="#687e96" stroke-dasharray="4 4"/>
+<text x="586" y="163">Original tile</text>
+<path d="M888.357,159 H889.289" stroke="#bb641a" stroke-width="2"/>
+<circle cx="888.357" cy="155.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 1.004906808×</title></circle>
+<circle cx="888.667" cy="157.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 1.005893955×</title></circle>
+<circle cx="888.977" cy="159.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 1.006883041×</title></circle>
+<circle cx="889.184" cy="161.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 1.007543513×</title></circle>
+<circle cx="889.289" cy="163.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 1.007876660×</title></circle>
+<path d="M888.977,150 V168" stroke="#bb641a" stroke-width="3"/>
+<text x="730" y="181" font-size="11" fill="#53677e">1.007× [1.005, 1.008]</text>
+<text x="586" y="212">Coalesced tile</text>
+<path d="M837.659,208 H838.593" stroke="#007f71" stroke-width="2"/>
+<circle cx="837.659" cy="204.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 0.843261071×</title></circle>
+<circle cx="838.314" cy="206.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 0.845349514×</title></circle>
+<circle cx="838.533" cy="208.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 0.846047964×</title></circle>
+<circle cx="838.241" cy="210.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 0.845116955×</title></circle>
+<circle cx="838.593" cy="212.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 0.846238678×</title></circle>
+<path d="M838.314,199 V217" stroke="#007f71" stroke-width="3"/>
+<text x="730" y="230" font-size="11" fill="#53677e">0.845× [0.843, 0.846]</text>
+<text x="586" y="261">Register tile</text>
+<path d="M907.618,257 H907.727" stroke="#7550ad" stroke-width="2"/>
+<circle cx="907.727" cy="253.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 1.066666687×</title></circle>
+<circle cx="907.727" cy="255.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 1.066666687×</title></circle>
+<circle cx="907.727" cy="257.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 1.066666687×</title></circle>
+<circle cx="907.727" cy="259.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 1.066666687×</title></circle>
+<circle cx="907.618" cy="261.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 1.066319463×</title></circle>
+<path d="M907.727,248 V266" stroke="#7550ad" stroke-width="3"/>
+<text x="730" y="279" font-size="11" fill="#53677e">1.067× [1.066, 1.067]</text>
+<text x="730.000" y="318" text-anchor="middle" font-size="11" fill="#53677e">0.50</text>
+<text x="816.250" y="318" text-anchor="middle" font-size="11" fill="#53677e">0.78</text>
+<text x="902.500" y="318" text-anchor="middle" font-size="11" fill="#53677e">1.05</text>
+<text x="988.750" y="318" text-anchor="middle" font-size="11" fill="#53677e">1.33</text>
+<text x="1075.000" y="318" text-anchor="middle" font-size="11" fill="#53677e">1.60</text>
+<rect x="20" y="368" width="535" height="252" rx="10" fill="white" stroke="#dce3eb"/>
+<text x="36" y="395" font-size="17" font-weight="650">4096x256</text>
+<path d="M336.818,408 V550" stroke="#687e96" stroke-dasharray="4 4"/>
+<text x="36" y="433">Original tile</text>
+<path d="M347.804,429 H348.353" stroke="#bb641a" stroke-width="2"/>
+<circle cx="347.896" cy="425.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 1.035319967×</title></circle>
+<circle cx="347.863" cy="427.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 1.035216955×</title></circle>
+<circle cx="348.353" cy="429.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 1.036776665×</title></circle>
+<circle cx="348.319" cy="431.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 1.036668177×</title></circle>
+<circle cx="347.804" cy="433.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 1.035026334×</title></circle>
+<path d="M347.896,420 V438" stroke="#bb641a" stroke-width="3"/>
+<text x="180" y="451" font-size="11" fill="#53677e">1.035× [1.035, 1.037]</text>
+<text x="36" y="482">Coalesced tile</text>
+<path d="M293.308,478 H293.813" stroke="#007f71" stroke-width="2"/>
+<circle cx="293.393" cy="474.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 0.861544088×</title></circle>
+<circle cx="293.308" cy="476.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 0.861273017×</title></circle>
+<circle cx="293.748" cy="478.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 0.862673417×</title></circle>
+<circle cx="293.813" cy="480.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 0.862882688×</title></circle>
+<circle cx="293.385" cy="482.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 0.861516082×</title></circle>
+<path d="M293.393,469 V487" stroke="#007f71" stroke-width="3"/>
+<text x="180" y="500" font-size="11" fill="#53677e">0.862× [0.861, 0.863]</text>
+<text x="36" y="531">Register tile</text>
+<path d="M431.560,527 H432.657" stroke="#7550ad" stroke-width="2"/>
+<circle cx="432.022" cy="523.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 1.303547973×</title></circle>
+<circle cx="431.931" cy="525.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 1.303257781×</title></circle>
+<circle cx="432.657" cy="527.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 1.305571913×</title></circle>
+<circle cx="432.109" cy="529.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 1.303827136×</title></circle>
+<circle cx="431.560" cy="531.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 1.302075855×</title></circle>
+<path d="M432.022,518 V536" stroke="#7550ad" stroke-width="3"/>
+<text x="180" y="549" font-size="11" fill="#53677e">1.304× [1.302, 1.306]</text>
+<text x="180.000" y="588" text-anchor="middle" font-size="11" fill="#53677e">0.50</text>
+<text x="266.250" y="588" text-anchor="middle" font-size="11" fill="#53677e">0.78</text>
+<text x="352.500" y="588" text-anchor="middle" font-size="11" fill="#53677e">1.05</text>
+<text x="438.750" y="588" text-anchor="middle" font-size="11" fill="#53677e">1.33</text>
+<text x="525.000" y="588" text-anchor="middle" font-size="11" fill="#53677e">1.60</text>
+<rect x="570" y="368" width="535" height="252" rx="10" fill="white" stroke="#dce3eb"/>
+<text x="586" y="395" font-size="17" font-weight="650">1024x512</text>
+<path d="M886.818,408 V550" stroke="#687e96" stroke-dasharray="4 4"/>
+<text x="586" y="433">Original tile</text>
+<path d="M899.489,429 H900.131" stroke="#bb641a" stroke-width="2"/>
+<circle cx="899.626" cy="425.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 1.040836961×</title></circle>
+<circle cx="899.489" cy="427.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 1.040398780×</title></circle>
+<circle cx="900.131" cy="429.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 1.042447992×</title></circle>
+<circle cx="899.914" cy="431.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 1.041753667×</title></circle>
+<circle cx="899.893" cy="433.000" r="3.5" fill="#bb641a" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 1.041688410×</title></circle>
+<path d="M899.893,420 V438" stroke="#bb641a" stroke-width="3"/>
+<text x="730" y="451" font-size="11" fill="#53677e">1.042× [1.040, 1.042]</text>
+<text x="586" y="482">Coalesced tile</text>
+<path d="M846.774,478 H846.914" stroke="#007f71" stroke-width="2"/>
+<circle cx="846.791" cy="474.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 0.872377666×</title></circle>
+<circle cx="846.774" cy="476.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 0.872323020×</title></circle>
+<circle cx="846.914" cy="478.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 0.872768241×</title></circle>
+<circle cx="846.791" cy="480.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 0.872377666×</title></circle>
+<circle cx="846.774" cy="482.000" r="3.5" fill="#007f71" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 0.872323020×</title></circle>
+<path d="M846.791,469 V487" stroke="#007f71" stroke-width="3"/>
+<text x="730" y="500" font-size="11" fill="#53677e">0.872× [0.872, 0.873]</text>
+<text x="586" y="531">Register tile</text>
+<path d="M1009.115,527 H1014.040" stroke="#7550ad" stroke-width="2"/>
+<circle cx="1014.040" cy="523.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-1: 1.405633865×</title></circle>
+<circle cx="1014.012" cy="525.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-2: 1.405545815×</title></circle>
+<circle cx="1009.115" cy="527.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-3: 1.389930606×</title></circle>
+<circle cx="1014.040" cy="529.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-4: 1.405633865×</title></circle>
+<circle cx="1014.012" cy="531.000" r="3.5" fill="#7550ad" fill-opacity=".65"><title>rtx4060-repeat-20261031T095734Z-5: 1.405545815×</title></circle>
+<path d="M1014.012,518 V536" stroke="#7550ad" stroke-width="3"/>
+<text x="730" y="549" font-size="11" fill="#53677e">1.406× [1.390, 1.406]</text>
+<text x="730.000" y="588" text-anchor="middle" font-size="11" fill="#53677e">0.50</text>
+<text x="816.250" y="588" text-anchor="middle" font-size="11" fill="#53677e">0.78</text>
+<text x="902.500" y="588" text-anchor="middle" font-size="11" fill="#53677e">1.05</text>
+<text x="988.750" y="588" text-anchor="middle" font-size="11" fill="#53677e">1.33</text>
+<text x="1075.000" y="588" text-anchor="middle" font-size="11" fill="#53677e">1.60</text>
+<text x="28" y="665" font-size="12">Kernel-only observations from repeated same-host sweeps; not confidence intervals or independent-device evidence.</text>
+</g></svg>

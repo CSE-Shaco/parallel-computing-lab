@@ -1,0 +1,493 @@
+{
+  "aggregation": "median and min-max of paired ratios; no pooled launch samples",
+  "analysis_unit": "per-run baseline median / candidate median",
+  "common": {
+    "CUDA_VISIBLE_DEVICES": null,
+    "architecture": "sm_89",
+    "environment": {
+      "compute_capability": "8.9",
+      "cuda_compiler_version": "13.3.73",
+      "driver_version": 13030,
+      "gpu": "NVIDIA GeForce RTX 4060",
+      "runtime_version": 13030
+    },
+    "host": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "inventory": {
+      "gpu_inventory": "0, NVIDIA GeForce RTX 4060, 610.88, 8188",
+      "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+    },
+    "kernel_names": [
+      "baseline",
+      "tiled",
+      "coalesced_tiled",
+      "register_tiled"
+    ],
+    "measurement_policy": {
+      "kernel_order": "rotating",
+      "warmup": 10
+    },
+    "normalized_build_commands": [
+      {
+        "argv": [
+          "nvcc",
+          "-std=c++17",
+          "-O3",
+          "-lineinfo",
+          "-arch=sm_89",
+          "-I",
+          "<MODULE>/include",
+          "<MODULE>/src/reference/reference.cpp",
+          "<MODULE>/tests/reference_test.cpp",
+          "-o",
+          "<BUILD>/reference_test"
+        ],
+        "label": "build-host-reference"
+      },
+      {
+        "argv": [
+          "nvcc",
+          "-std=c++17",
+          "-O3",
+          "-lineinfo",
+          "-arch=sm_89",
+          "-I",
+          "<MODULE>/include",
+          "<MODULE>/src/reference/reference.cpp",
+          "<MODULE>/tests/tile_layout_test.cpp",
+          "-o",
+          "<BUILD>/tile_layout_test"
+        ],
+        "label": "build-host-layout"
+      },
+      {
+        "argv": [
+          "nvcc",
+          "-std=c++17",
+          "-O3",
+          "-lineinfo",
+          "-arch=sm_89",
+          "-I",
+          "<MODULE>/include",
+          "<MODULE>/src/reference/reference.cpp",
+          "<MODULE>/src/kernels/baseline.cu",
+          "<MODULE>/src/kernels/tiled.cu",
+          "<MODULE>/src/kernels/coalesced_tiled.cu",
+          "<MODULE>/src/kernels/register_tiled.cu",
+          "<MODULE>/tests/correctness_test.cu",
+          "-o",
+          "<BUILD>/correctness_test"
+        ],
+        "label": "build-correctness"
+      },
+      {
+        "argv": [
+          "nvcc",
+          "-std=c++17",
+          "-O3",
+          "-lineinfo",
+          "-arch=sm_89",
+          "-I",
+          "<MODULE>/include",
+          "<MODULE>/src/reference/reference.cpp",
+          "<MODULE>/src/kernels/baseline.cu",
+          "<MODULE>/src/kernels/tiled.cu",
+          "<MODULE>/src/kernels/coalesced_tiled.cu",
+          "<MODULE>/src/kernels/register_tiled.cu",
+          "<MODULE>/src/main.cu",
+          "-o",
+          "<BUILD>/kernel_benchmark"
+        ],
+        "label": "build-benchmark"
+      }
+    ],
+    "repeats": 40,
+    "shapes": [
+      "257,65",
+      "1024,128",
+      "4096,256",
+      "1024,512"
+    ],
+    "source_sha256": {
+      "CMakeLists.txt": "3aed76d3bdfe74f5d082f55aff3a5d30f0016d2769dd53d0d74782005183fe53",
+      "benchmarks/analyze_results.py": "89dd47a31153cb9219f534fa10e43843f7b70abaa8dc2e6bf8b8af43bb9d5a84",
+      "benchmarks/run_benchmark.py": "5d5c981dd086722a7e0b74373b9d24cd1c776e1000e98f0d254d1fa3ee4c054f",
+      "benchmarks/run_gpu_validation.py": "31168721acc797d8ecd5f4f2d1103c0daf59e065cd25f11d6f551bb7973398be",
+      "include/kernels.cuh": "0ad1b894670eaef3269b5d5f86405049e7239d7637bdfbad32bedcf1bd61466a",
+      "include/reference.hpp": "78948c30f8b5da25601bf3f381b0a999c4dd522b5f682caf2f4ddde18ef0de94",
+      "include/tile_layout.hpp": "f05f56030ea37ce968460f874069291d6470fdc6e266349ce17fc0c8f60958e8",
+      "include/validation.cuh": "e6c2bde8104dcea73496ead6b573b0d3b29c0951101ae61e1eb7081c77d92b2b",
+      "src/kernels/baseline.cu": "547d0c2b6de5c0b25e81fe2e4fbbea8f92c56a0252bde5a7a764406469e35628",
+      "src/kernels/coalesced_tiled.cu": "a0123be9b397167e50317960e7dc1a0f815f970b2a4e47864d9bfeec8ccc1b15",
+      "src/kernels/register_tiled.cu": "d08024894e97c738ccaf8fee925012fbfa15eb019ea32fd93fbd190c9729b701",
+      "src/kernels/tiled.cu": "791dc1a5535e7100cec4c9069bc6efa238080ed784a723e9e04d0c25dba3fb11",
+      "src/main.cu": "a52a5f4601b1dde0db83f95b6eb59aa51fd06506c9667acaa020dc59f6ed768a",
+      "src/reference/reference.cpp": "44b91bd295d25492162fccbee7e252823c2de44aed86019e3320a9220d14f988",
+      "tests/correctness_test.cu": "a4c92fe267582788b4c43c26a175504aea66de55dcac6167be3bb67b5029f249",
+      "tests/reference_test.cpp": "d8a6a412802cde83c835e4c5cd24cacb2217ba8b0a720039c7fee818854fea38",
+      "tests/test_analysis.py": "1443ef1b16f1ed42dc8c099a9ade7e7055e8446c9dbf1a4b801fbdcf194bedfe",
+      "tests/test_benchmark_runner.py": "78705882ce15f57240b5fd93c0122d548118ee5f0074ef346514001b59800d80",
+      "tests/test_gpu_runner.py": "e8b439c36661880d1073f5717e34df3d1a7998100234c3e8c282ff2ac1a270b8",
+      "tests/tile_layout_test.cpp": "e90f71d4592498eedf61b4727c260f69912dfaa2596cdb7b445ef122c2a37cc8"
+    },
+    "variant_configuration": {
+      "baseline": {
+        "block": [
+          16,
+          16
+        ],
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 1
+      },
+      "coalesced_tiled": {
+        "block": [
+          16,
+          16
+        ],
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 16
+      },
+      "register_tiled": {
+        "block": [
+          32,
+          8
+        ],
+        "output_tile": [
+          32,
+          32
+        ],
+        "outputs_per_thread": 4,
+        "reduction_tile": 32
+      },
+      "tiled": {
+        "block": [
+          16,
+          16
+        ],
+        "output_tile": [
+          16,
+          16
+        ],
+        "outputs_per_thread": 1,
+        "reduction_tile": 16
+      }
+    }
+  },
+  "limits": [
+    "Same-host repeated sweeps are not independent machines or thermal states",
+    "No statistical significance, confidence intervals or end-to-end speedup inferred",
+    "Recorded source/result/log consistency is not an authenticity attestation",
+    "Target binaries absent; their recorded hashes are not independently rehashed"
+  ],
+  "run_labels": [
+    "rtx4060-repeat-20261031T095734Z-1",
+    "rtx4060-repeat-20261031T095734Z-2",
+    "rtx4060-repeat-20261031T095734Z-3",
+    "rtx4060-repeat-20261031T095734Z-4",
+    "rtx4060-repeat-20261031T095734Z-5"
+  ],
+  "schema_version": 1,
+  "session_count": 5,
+  "shapes": [
+    {
+      "kernels": {
+        "baseline": {
+          "paired_ratio_max": 1.0,
+          "paired_ratio_median": 1.0,
+          "paired_ratio_min": 1.0,
+          "paired_ratios": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "runtime_reduction_percent_max": 0.0,
+          "runtime_reduction_percent_median": 0.0,
+          "runtime_reduction_percent_min": 0.0,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 0
+        },
+        "coalesced_tiled": {
+          "paired_ratio_max": 0.6923077274986137,
+          "paired_ratio_median": 0.6923077274986137,
+          "paired_ratio_min": 0.6874999983097956,
+          "paired_ratios": [
+            0.6923077274986137,
+            0.6874999983097956,
+            0.6923077274986137,
+            0.6923077274986137,
+            0.6898203736553836
+          ],
+          "runtime_reduction_percent_max": -44.44443710214148,
+          "runtime_reduction_percent_median": -44.44443710214148,
+          "runtime_reduction_percent_min": -45.45454581214241,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 0
+        },
+        "register_tiled": {
+          "paired_ratio_max": 0.600000037109376,
+          "paired_ratio_median": 0.600000037109376,
+          "paired_ratio_min": 0.5958333384331598,
+          "paired_ratios": [
+            0.600000037109376,
+            0.5958333384331598,
+            0.600000037109376,
+            0.600000037109376,
+            0.600000037109376
+          ],
+          "runtime_reduction_percent_max": -66.66665635850732,
+          "runtime_reduction_percent_median": -66.66665635850732,
+          "runtime_reduction_percent_min": -67.83216639566727,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 0
+        },
+        "tiled": {
+          "paired_ratio_max": 0.9128367952018779,
+          "paired_ratio_median": 0.9064976069730585,
+          "paired_ratio_min": 0.9014084785729239,
+          "paired_ratios": [
+            0.9014084785729239,
+            0.9064976069730585,
+            0.9128367952018779,
+            0.9056603919878067,
+            0.9070866421895343
+          ],
+          "runtime_reduction_percent_max": -9.548607731006896,
+          "runtime_reduction_percent_median": -10.314687243263787,
+          "runtime_reduction_percent_min": -10.937496570163429,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 0
+        }
+      },
+      "shape": "257x65"
+    },
+    {
+      "kernels": {
+        "baseline": {
+          "paired_ratio_max": 1.0,
+          "paired_ratio_median": 1.0,
+          "paired_ratio_min": 1.0,
+          "paired_ratios": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "runtime_reduction_percent_max": 0.0,
+          "runtime_reduction_percent_median": 0.0,
+          "runtime_reduction_percent_min": 0.0,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 0
+        },
+        "coalesced_tiled": {
+          "paired_ratio_max": 0.8462386782771841,
+          "paired_ratio_median": 0.8453495143943011,
+          "paired_ratio_min": 0.8432610705182793,
+          "paired_ratios": [
+            0.8432610705182793,
+            0.8453495143943011,
+            0.846047963779702,
+            0.8451169546131815,
+            0.8462386782771841
+          ],
+          "runtime_reduction_percent_max": -18.169970915989218,
+          "runtime_reduction_percent_median": -18.29426562296037,
+          "runtime_reduction_percent_min": -18.58723649905798,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 0
+        },
+        "register_tiled": {
+          "paired_ratio_max": 1.0666666873553239,
+          "paired_ratio_median": 1.0666666873553239,
+          "paired_ratio_min": 1.0663194629682375,
+          "paired_ratios": [
+            1.0666666873553239,
+            1.0666666873553239,
+            1.0666666873553239,
+            1.0666666873553239,
+            1.0663194629682375
+          ],
+          "runtime_reduction_percent_max": 6.25000181833898,
+          "runtime_reduction_percent_median": 6.25000181833898,
+          "runtime_reduction_percent_min": 6.2194741136609055,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 5
+        },
+        "tiled": {
+          "paired_ratio_max": 1.0078766596291366,
+          "paired_ratio_median": 1.0068830405093911,
+          "paired_ratio_min": 1.0049068081552723,
+          "paired_ratios": [
+            1.0049068081552723,
+            1.0058939547099497,
+            1.0068830405093911,
+            1.007543513404409,
+            1.0078766596291366
+          ],
+          "runtime_reduction_percent_max": 0.7815102725005074,
+          "runtime_reduction_percent_median": 0.6835988126196679,
+          "runtime_reduction_percent_min": 0.4882848952212693,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 5
+        }
+      },
+      "shape": "1024x128"
+    },
+    {
+      "kernels": {
+        "baseline": {
+          "paired_ratio_max": 1.0,
+          "paired_ratio_median": 1.0,
+          "paired_ratio_min": 1.0,
+          "paired_ratios": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "runtime_reduction_percent_max": 0.0,
+          "runtime_reduction_percent_median": 0.0,
+          "runtime_reduction_percent_min": 0.0,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 0
+        },
+        "coalesced_tiled": {
+          "paired_ratio_max": 0.8628826883742413,
+          "paired_ratio_median": 0.8615440879910519,
+          "paired_ratio_min": 0.8612730173281468,
+          "paired_ratios": [
+            0.8615440879910519,
+            0.8612730173281468,
+            0.862673416624624,
+            0.8628826883742413,
+            0.8615160816557963
+          ],
+          "runtime_reduction_percent_max": -15.890608708827102,
+          "runtime_reduction_percent_median": -16.0706705482478,
+          "runtime_reduction_percent_min": -16.107201767705902,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 0
+        },
+        "register_tiled": {
+          "paired_ratio_max": 1.3055719131469123,
+          "paired_ratio_median": 1.3035479725074952,
+          "paired_ratio_min": 1.302075855038692,
+          "paired_ratios": [
+            1.3035479725074952,
+            1.3032577805741632,
+            1.3055719131469123,
+            1.3038271358041154,
+            1.302075855038692
+          ],
+          "runtime_reduction_percent_max": 23.405214991977786,
+          "runtime_reduction_percent_median": 23.286290869954918,
+          "runtime_reduction_percent_min": 23.199558909700823,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 5
+        },
+        "tiled": {
+          "paired_ratio_max": 1.0367766650333108,
+          "paired_ratio_median": 1.0353199668601347,
+          "paired_ratio_min": 1.0350263340604375,
+          "paired_ratios": [
+            1.0353199668601347,
+            1.0352169547242105,
+            1.0367766650333108,
+            1.036668176821139,
+            1.0350263340604375
+          ],
+          "runtime_reduction_percent_max": 3.547211880210399,
+          "runtime_reduction_percent_median": 3.4115025297204893,
+          "runtime_reduction_percent_min": 3.3841007622509633,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 5
+        }
+      },
+      "shape": "4096x256"
+    },
+    {
+      "kernels": {
+        "baseline": {
+          "paired_ratio_max": 1.0,
+          "paired_ratio_median": 1.0,
+          "paired_ratio_min": 1.0,
+          "paired_ratios": [
+            1.0,
+            1.0,
+            1.0,
+            1.0,
+            1.0
+          ],
+          "runtime_reduction_percent_max": 0.0,
+          "runtime_reduction_percent_median": 0.0,
+          "runtime_reduction_percent_min": 0.0,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 0
+        },
+        "coalesced_tiled": {
+          "paired_ratio_max": 0.87276824074255,
+          "paired_ratio_median": 0.872377666295237,
+          "paired_ratio_min": 0.8723230197689547,
+          "paired_ratios": [
+            0.872377666295237,
+            0.8723230197689547,
+            0.87276824074255,
+            0.872377666295237,
+            0.8723230197689547
+          ],
+          "runtime_reduction_percent_max": -14.577954755686505,
+          "runtime_reduction_percent_median": -14.629252746318233,
+          "runtime_reduction_percent_min": -14.636433676238681,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 0
+        },
+        "register_tiled": {
+          "paired_ratio_max": 1.4056338650487878,
+          "paired_ratio_median": 1.405545814871763,
+          "paired_ratio_min": 1.3899306059267231,
+          "paired_ratios": [
+            1.4056338650487878,
+            1.405545814871763,
+            1.3899306059267231,
+            1.4056338650487878,
+            1.405545814871763
+          ],
+          "runtime_reduction_percent_max": 28.85771858055717,
+          "runtime_reduction_percent_median": 28.85326188451307,
+          "runtime_reduction_percent_min": 28.05396213768101,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 5
+        },
+        "tiled": {
+          "paired_ratio_max": 1.0424479915209197,
+          "paired_ratio_median": 1.041688410472493,
+          "paired_ratio_min": 1.040398779560761,
+          "paired_ratios": [
+            1.0408369610868953,
+            1.040398779560761,
+            1.0424479915209197,
+            1.0417536668646907,
+            1.041688410472493
+          ],
+          "runtime_reduction_percent_max": 4.071952928700895,
+          "runtime_reduction_percent_median": 4.0020038673161284,
+          "runtime_reduction_percent_min": 3.8830091263483357,
+          "session_count": 5,
+          "sessions_lower_time_than_baseline": 5
+        }
+      },
+      "shape": "1024x512"
+    }
+  ],
+  "total_launch_samples": 3200
+}
