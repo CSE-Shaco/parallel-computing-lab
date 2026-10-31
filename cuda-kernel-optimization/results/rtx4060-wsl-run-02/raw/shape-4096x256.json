@@ -1,0 +1,105 @@
+{
+  "captured_at_utc": "2026-10-31T08:39:37.215759+00:00",
+  "host": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "build_options": "[[\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/tests/reference_test.cpp\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/reference_test\"], [\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/baseline.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/tiled.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/tests/correctness_test.cu\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/correctness_test\"], [\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/baseline.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/tiled.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/main.cu\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/kernel_benchmark\"]]",
+  "binary_sha256": "133247f87c8bb186f4b950449343133d417a8f8675b610c38b141803c82c67eb",
+  "runs": [
+    {
+      "schema_version": 1,
+      "operation": "uncentered_second_moment",
+      "gpu": "NVIDIA GeForce RTX 4060",
+      "compute_capability": "8.9",
+      "runtime_version": 13030,
+      "driver_version": 13030,
+      "cuda_compiler_version": "13.3.73",
+      "samples": 4096,
+      "features": 256,
+      "warmup": 3,
+      "block": [
+        16,
+        16
+      ],
+      "validated": true,
+      "results": [
+        {
+          "kernel": "baseline",
+          "max_abs_error": 0,
+          "milliseconds": [
+            0.604160011,
+            0.605184019,
+            0.605184019,
+            0.602847993,
+            0.60275197,
+            0.603136003,
+            0.603136003,
+            0.60630399,
+            0.610303998,
+            0.603136003,
+            0.604896009,
+            0.604160011,
+            0.603136003,
+            0.608160019,
+            0.608255982,
+            0.603168011,
+            0.622591972,
+            0.607231975,
+            0.604063988,
+            0.60006398,
+            0.603136003,
+            0.605184019,
+            0.605856001,
+            0.60332799,
+            0.602847993,
+            0.604160011,
+            0.603136003,
+            0.604160011,
+            0.605184019,
+            0.604160011
+          ]
+        },
+        {
+          "kernel": "tiled",
+          "max_abs_error": 0,
+          "milliseconds": [
+            0.582656026,
+            0.583392024,
+            0.581632018,
+            0.582336009,
+            0.581727982,
+            0.581247985,
+            0.581632018,
+            0.581632018,
+            0.581632018,
+            0.58259201,
+            0.581632018,
+            0.582527995,
+            0.582656026,
+            0.582336009,
+            0.581632018,
+            0.582783997,
+            0.582656026,
+            0.582656026,
+            0.581632018,
+            0.581568003,
+            0.583552003,
+            0.581279993,
+            0.582656026,
+            0.581632018,
+            0.582751989,
+            0.598016024,
+            0.582431972,
+            0.581632018,
+            0.586751997,
+            0.582560003
+          ]
+        }
+      ],
+      "command": [
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/kernel_benchmark",
+        "4096",
+        "256",
+        "30"
+      ]
+    }
+  ]
+}

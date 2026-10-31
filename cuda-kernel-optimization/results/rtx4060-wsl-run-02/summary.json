@@ -1,0 +1,41 @@
+[
+  {
+    "baseline": 0.00911999959,
+    "baseline_count": 30,
+    "baseline_max": 0.0348160006,
+    "baseline_min": 0.00819199998,
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "shape": "257x65",
+    "speedup": 0.8934168527266124,
+    "tiled": 0.0102080004,
+    "tiled_count": 30,
+    "tiled_max": 0.0102399997,
+    "tiled_min": 0.00921600033
+  },
+  {
+    "baseline": 0.0491520017,
+    "baseline_count": 30,
+    "baseline_max": 0.0500160009,
+    "baseline_min": 0.0481280014,
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "shape": "1024x128",
+    "speedup": 1.0182300914150566,
+    "tiled": 0.04827199875,
+    "tiled_count": 30,
+    "tiled_max": 0.0532799996,
+    "tiled_min": 0.0481280014
+  },
+  {
+    "baseline": 0.604160011,
+    "baseline_count": 30,
+    "baseline_max": 0.622591972,
+    "baseline_min": 0.60006398,
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "shape": "4096x256",
+    "speedup": 1.037391172929229,
+    "tiled": 0.5823839905,
+    "tiled_count": 30,
+    "tiled_max": 0.598016024,
+    "tiled_min": 0.581247985
+  }
+]

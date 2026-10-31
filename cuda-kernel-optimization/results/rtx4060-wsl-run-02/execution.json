@@ -1,0 +1,240 @@
+{
+  "schema_version": 1,
+  "status": "complete",
+  "started_utc": "2026-10-31T08:39:23.426825+00:00",
+  "host": "Linux-6.6.87.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+  "architecture": "sm_89",
+  "requested_shapes": [
+    "257,65",
+    "1024,128",
+    "4096,256"
+  ],
+  "repeats": 30,
+  "source_sha256": {
+    "CMakeLists.txt": "2e57fbc44b87e7ce2b5ad443b075a94de3dd513c3214f58d49b25aabf1d68bc3",
+    "benchmarks/analyze_results.py": "5251519dfbe74100946550ed7e857bf39afbf2db8fc1897042c80fc454e023ff",
+    "benchmarks/run_benchmark.py": "debc3303a93612147d8eb6fe99c0180e14993c45a053453ece6f56c9ca96987f",
+    "benchmarks/run_gpu_validation.py": "e48541a02885b8d4567d2099f0ffe8018a8eed0e923882ebc4d99a81e7fc4634",
+    "include/kernels.cuh": "a3ee08493b46b5a7b464e0913d001bafdf2817812dd9623c4b5dcdea3bc91ae0",
+    "include/reference.hpp": "9dbe8c3e51f3711f15dd955c4151a1d7be5207d4a8b323ebc79be355eb64c5f7",
+    "include/validation.cuh": "3d4d66388c655bf47648c0385d581250c0228a02403deb1f060cac43937ccab3",
+    "src/kernels/baseline.cu": "7c02f6b321e861fb3b742657aaf2dfc6c88e96f218aa964f877a7cdfc09e82d4",
+    "src/kernels/tiled.cu": "c681c7e36b78c1004eb1dc583c9f68e7f2cf0766470c9d36e9b32c2de05742a8",
+    "src/main.cu": "face428b16b9cd54ec6e0ae6ffd61ef166f36f8fe7053385ac7de1b3a3f60d42",
+    "src/reference/reference.cpp": "a5f5e7e5e3bbb236bf21117beae4725643d1c01328303d07c4fd0dfe9dce33cc",
+    "tests/correctness_test.cu": "c43b6f757d9b94cae33477bc6b30428dea6e822accc3e0b2cfacb6730417d821",
+    "tests/reference_test.cpp": "08568e0095c8300370a0b95b7fb33a02ac42e40c3807cc30206c04bc29a84068",
+    "tests/test_analysis.py": "60f7df804002b745f321f0bd6fb14fe75613de903c713d8b25d63008a8da6a65",
+    "tests/test_gpu_runner.py": "fec60df25319ce32ceda631830fbc0a48fcd0e39795ee459871908c07fc245f4"
+  },
+  "preflight": {
+    "nvcc_version": {
+      "command": [
+        "/usr/local/cuda/bin/nvcc",
+        "--version"
+      ],
+      "stdout": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2026 NVIDIA Corporation\nBuilt on Tue_Jun_09_02:43:40_PM_PDT_2026\nCuda compilation tools, release 13.3, V13.3.73\nBuild cuda_13.3.r13.3/compiler.38244171_0"
+    },
+    "gpu_inventory": {
+      "command": [
+        "/usr/lib/wsl/lib/nvidia-smi",
+        "--query-gpu=index,name,driver_version,memory.total",
+        "--format=csv,noheader,nounits"
+      ],
+      "stdout": "0, NVIDIA GeForce RTX 4060, 610.88, 8188"
+    }
+  },
+  "commands": [
+    {
+      "label": "build-host-reference",
+      "command": [
+        "/usr/local/cuda/bin/nvcc",
+        "-std=c++17",
+        "-O3",
+        "-lineinfo",
+        "-arch=sm_89",
+        "-I",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/tests/reference_test.cpp",
+        "-o",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/reference_test"
+      ],
+      "started_utc": "2026-10-31T08:39:23.479067+00:00",
+      "returncode": 0
+    },
+    {
+      "label": "host-reference",
+      "command": [
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/reference_test"
+      ],
+      "started_utc": "2026-10-31T08:39:24.550183+00:00",
+      "returncode": 0
+    },
+    {
+      "label": "build-correctness",
+      "command": [
+        "/usr/local/cuda/bin/nvcc",
+        "-std=c++17",
+        "-O3",
+        "-lineinfo",
+        "-arch=sm_89",
+        "-I",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/baseline.cu",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/tiled.cu",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/tests/correctness_test.cu",
+        "-o",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/correctness_test"
+      ],
+      "started_utc": "2026-10-31T08:39:24.562235+00:00",
+      "returncode": 0
+    },
+    {
+      "label": "gpu-correctness",
+      "command": [
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/correctness_test"
+      ],
+      "started_utc": "2026-10-31T08:39:28.949024+00:00",
+      "returncode": 0
+    },
+    {
+      "label": "memcheck",
+      "command": [
+        "/usr/local/cuda/bin/compute-sanitizer",
+        "--tool",
+        "memcheck",
+        "--error-exitcode",
+        "99",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/correctness_test"
+      ],
+      "started_utc": "2026-10-31T08:39:29.194573+00:00",
+      "returncode": 0
+    },
+    {
+      "label": "racecheck",
+      "command": [
+        "/usr/local/cuda/bin/compute-sanitizer",
+        "--tool",
+        "racecheck",
+        "--error-exitcode",
+        "99",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/correctness_test"
+      ],
+      "started_utc": "2026-10-31T08:39:29.606994+00:00",
+      "returncode": 0
+    },
+    {
+      "label": "build-benchmark",
+      "command": [
+        "/usr/local/cuda/bin/nvcc",
+        "-std=c++17",
+        "-O3",
+        "-lineinfo",
+        "-arch=sm_89",
+        "-I",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/baseline.cu",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/tiled.cu",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/main.cu",
+        "-o",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/kernel_benchmark"
+      ],
+      "started_utc": "2026-10-31T08:39:30.240668+00:00",
+      "returncode": 0
+    },
+    {
+      "label": "benchmark-shape-0",
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/benchmarks/run_benchmark.py",
+        "--binary",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/kernel_benchmark",
+        "--repeats",
+        "30",
+        "--build-options",
+        "[[\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/tests/reference_test.cpp\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/reference_test\"], [\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/baseline.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/tiled.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/tests/correctness_test.cu\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/correctness_test\"], [\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/baseline.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/tiled.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/main.cu\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/kernel_benchmark\"]]",
+        "--shape",
+        "257,65",
+        "--output",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/raw/shape-257x65.json"
+      ],
+      "started_utc": "2026-10-31T08:39:35.201726+00:00",
+      "returncode": 0
+    },
+    {
+      "label": "benchmark-shape-1",
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/benchmarks/run_benchmark.py",
+        "--binary",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/kernel_benchmark",
+        "--repeats",
+        "30",
+        "--build-options",
+        "[[\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/tests/reference_test.cpp\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/reference_test\"], [\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/baseline.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/tiled.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/tests/correctness_test.cu\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/correctness_test\"], [\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/baseline.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/tiled.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/main.cu\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/kernel_benchmark\"]]",
+        "--shape",
+        "1024,128",
+        "--output",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/raw/shape-1024x128.json"
+      ],
+      "started_utc": "2026-10-31T08:39:35.560134+00:00",
+      "returncode": 0
+    },
+    {
+      "label": "benchmark-shape-2",
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/benchmarks/run_benchmark.py",
+        "--binary",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/kernel_benchmark",
+        "--repeats",
+        "30",
+        "--build-options",
+        "[[\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/tests/reference_test.cpp\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/reference_test\"], [\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/baseline.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/tiled.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/tests/correctness_test.cu\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/correctness_test\"], [\"/usr/local/cuda/bin/nvcc\", \"-std=c++17\", \"-O3\", \"-lineinfo\", \"-arch=sm_89\", \"-I\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/include\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/reference/reference.cpp\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/baseline.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/kernels/tiled.cu\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/src/main.cu\", \"-o\", \"/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/build/kernel_benchmark\"]]",
+        "--shape",
+        "4096,256",
+        "--output",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/raw/shape-4096x256.json"
+      ],
+      "started_utc": "2026-10-31T08:39:35.871086+00:00",
+      "returncode": 0
+    },
+    {
+      "label": "analysis",
+      "command": [
+        "/usr/bin/python3",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/benchmarks/analyze_results.py",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/benchmark.json",
+        "--figure",
+        "/mnt/c/Users/JM/Projects/parallel-computing-lab/cuda-kernel-optimization/results/rtx4060-wsl-run-02/kernel-time.svg"
+      ],
+      "started_utc": "2026-10-31T08:39:37.272801+00:00",
+      "returncode": 0
+    }
+  ],
+  "CUDA_VISIBLE_DEVICES": null,
+  "timing_scope": "Kernel-only CUDA events; CPU reference and transfers excluded.",
+  "measurement_limits": "GPU clocks, thermal state, power policy and background load are not fixed by this runner.",
+  "operation": "uncentered_second_moment",
+  "sanitizer": "PASS: memcheck and racecheck",
+  "binary_sha256": {
+    "reference_test": "6a421acd9b57ee8f581aceffc864a419a3dd0514c66bb4dce75e822427723ef0",
+    "correctness_test": "ff21518250d9069ae08838f0dc24133c2156b266332359c8381acc493c07afe4",
+    "kernel_benchmark": "133247f87c8bb186f4b950449343133d417a8f8675b610c38b141803c82c67eb"
+  },
+  "completed_shapes": [
+    "257,65",
+    "1024,128",
+    "4096,256"
+  ],
+  "completed_utc": "2026-10-31T08:39:37.449932+00:00",
+  "gpu_validation": "PASS: host reference, 8 GPU correctness shapes, per-run CPU checks",
+  "result_sha256": {
+    "benchmark.json": "beb91c8761c08563b3caf3c324e415ce57cadafac78fdbc6411eb15caedf52b5",
+    "summary.json": "7ce1cd619092e27e91a80a95d2708060be1f2f1235a21140853a2e71380727b2",
+    "kernel-time.svg": "ac518faa59b612a361b8efc33e2998409bb1cba939afbc1bddf7298a5ab27ea9"
+  }
+}

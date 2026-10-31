@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="900" height="360" viewBox="0 0 900 360">
+<rect width="100%" height="100%" fill="white"/>
+<g font-family="sans-serif" font-size="13" fill="#18212a">
+<text x="20" y="25">Kernel time (ms): median bars; whiskers show min–max</text>
+<text x="20" y="47">Blue: baseline. Orange: shared-memory tiled. Transfers excluded.</text>
+<text x="20" y="80">257x65 (0.893×)</text>
+<rect x="200" y="88" width="7.470703125127993" height="16" fill="#2767a3"/>
+<path d="M206.71052660120068,96 H228.51973861622488 M206.71052660120068,91 v10 M228.51973861622488,91 v10" stroke="#111"/>
+<text x="735" y="101">0.00912 ms (n=30)</text>
+<rect x="200" y="112" width="8.36194560504227" height="16" fill="#c76620"/>
+<path d="M207.5493427151033,120 H208.38815802623296 M207.5493427151033,115 v10 M208.38815802623296,115 v10" stroke="#111"/>
+<text x="735" y="125">0.01021 ms (n=30)</text>
+<text x="20" y="170">1024x128 (1.018×)</text>
+<rect x="200" y="178" width="40.26316109806825" height="16" fill="#2767a3"/>
+<path d="M239.42434502512344,186 H240.97091129694167 M239.42434502512344,181 v10 M240.97091129694167,181 v10" stroke="#111"/>
+<text x="735" y="191">0.04915 ms (n=30)</text>
+<rect x="200" y="202" width="39.54230133005955" height="16" fill="#c76620"/>
+<path d="M239.42434502512344,210 H243.64463568123233 M239.42434502512344,205 v10 M243.64463568123233,205 v10" stroke="#111"/>
+<text x="735" y="215">0.04827 ms (n=30)</text>
+<text x="20" y="260">4096x256 (1.037×)</text>
+<rect x="200" y="268" width="494.9013470575236" height="16" fill="#2767a3"/>
+<path d="M691.5460583548931,276 H710.0 M691.5460583548931,271 v10 M710.0,271 v10" stroke="#111"/>
+<text x="735" y="281">0.60416 ms (n=30)</text>
+<rect x="200" y="292" width="477.0633874395669" height="16" fill="#c76620"/>
+<path d="M676.1328216259107,300 H689.8684627433647 M676.1328216259107,295 v10 M689.8684627433647,295 v10" stroke="#111"/>
+<text x="735" y="305">0.58238 ms (n=30)</text>
+</g></svg>
