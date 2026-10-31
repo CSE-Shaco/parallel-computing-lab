@@ -16,6 +16,26 @@ runner = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(runner)
 
 
+def synthetic_run(dimensions="1,1", repeats=3):
+    """Clearly synthetic protocol fixture, never device execution evidence."""
+    m, n = map(int, dimensions.split(","))
+    names = ["baseline", "tiled", "coalesced_tiled", "register_tiled"]
+    results = []
+    for name in names:
+        register = name == "register_tiled"
+        results.append({"kernel": name, "max_abs_error": 0.0,
+                        "milliseconds": [1.0] * repeats,
+                        "block": [32,8] if register else [16,16],
+                        "output_tile": [32,32] if register else [16,16],
+                        "reduction_tile": 1 if name == "baseline" else 32 if register else 16,
+                        "outputs_per_thread": 4 if register else 1})
+    return {"schema_version": 2, "validated": True, "operation": "uncentered_second_moment",
+            "samples": m, "features": n, "gpu": "synthetic-unit-fixture",
+            "compute_capability": "0.0", "runtime_version": 0, "driver_version": 0,
+            "cuda_compiler_version": "synthetic", "warmup": 10, "kernel_order": "rotating",
+            "kernel_names": names, "results": results}
+
+
 class GpuRunnerTests(unittest.TestCase):
     def test_shape_validation_and_normalization(self):
         self.assertEqual(runner.shape("0017,19"), "17,19")
@@ -99,7 +119,7 @@ class GpuRunnerTests(unittest.TestCase):
                     destination = Path(command[command.index("--output") + 1])
                     destination.write_text(json.dumps({
                         "binary_sha256": runner.digest(path / "build/kernel_benchmark"),
-                        "runs": [{"synthetic_unit_fixture": True}],
+                        "runs": [synthetic_run(dimensions)],
                     }))
                 return subprocess.CompletedProcess(command, 0, "", "")
 
@@ -112,6 +132,78 @@ class GpuRunnerTests(unittest.TestCase):
             self.assertTrue((path / "raw/shape-1x1.json").is_file())
             self.assertFalse((path / "benchmark.json").exists())
             self.assertFalse((path / "kernel-time.svg").exists())
+
+
+    def test_mocked_four_variant_pipeline_records_policy_and_compiles_all_sources(self):
+        from analyze_results import draw
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "synthetic-protocol-unit-only"
+            args = argparse.Namespace(out=path, arch="sm_89", shape=["1,1"], repeats=3, timeout=1)
+            tools = {"nvcc": "/synthetic/nvcc", "compute_sanitizer": "/synthetic/compute-sanitizer"}
+            def command_fixture(command, **kwargs):
+                stdout = "synthetic unit response, not a GPU result"
+                if command[0] == tools["nvcc"]:
+                    Path(command[-1]).write_bytes(b"synthetic unit binary")
+                elif command[0] == runner.sys.executable:
+                    if "--shape" in command:
+                        destination = Path(command[command.index("--output") + 1])
+                        destination.write_text(json.dumps({
+                            "binary_sha256": runner.digest(path / "build/kernel_benchmark"),
+                            "runs": [synthetic_run()],
+                        }))
+                    else:
+                        document = json.loads((path / "benchmark.json").read_text())
+                        rows = runner.summarize(document)
+                        draw(rows, Path(command[command.index("--figure") + 1]))
+                        stdout = "\n".join(json.dumps(row) for row in rows)
+                return subprocess.CompletedProcess(command, 0, stdout, "")
+            with mock.patch.object(runner.subprocess, "run", side_effect=command_fixture):
+                self.assertEqual(runner.run_validation(args, tools, {}), 0)
+            record = json.loads((path / "execution.json").read_text())
+            self.assertEqual(record["status"], "complete")
+            self.assertEqual(record["kernel_names"], ["baseline", "tiled", "coalesced_tiled", "register_tiled"])
+            self.assertEqual(record["measurement_policy"], {"warmup": 10, "kernel_order": "rotating"})
+            self.assertEqual(record["correctness_shapes"], 12)
+            self.assertEqual(record["variant_configuration"]["baseline"]["reduction_tile"], 1)
+            self.assertEqual(set(record["binary_sha256"]), {"reference_test", "tile_layout_test", "correctness_test", "kernel_benchmark"})
+            for label in ("build-correctness", "build-benchmark"):
+                command = next(entry["command"] for entry in record["commands"] if entry["label"] == label)
+                files = {Path(value).name for value in command}
+                self.assertTrue({"baseline.cu", "tiled.cu", "coalesced_tiled.cu", "register_tiled.cu"}.issubset(files))
+            labels = [entry["label"] for entry in record["commands"]]
+            self.assertLess(labels.index("host-layout"), labels.index("gpu-correctness"))
+            self.assertLess(labels.index("racecheck"), labels.index("build-benchmark"))
+
+    def test_sanitizer_error_stops_before_any_benchmark(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / "failed-sanitizer-unit-only"
+            args = argparse.Namespace(out=path, arch="sm_89", shape=["1,1"], repeats=3, timeout=1)
+            tools = {"nvcc": "/synthetic/nvcc", "compute_sanitizer": "/synthetic/compute-sanitizer"}
+            def command_fixture(command, **kwargs):
+                if command[0] == tools["nvcc"]:
+                    Path(command[-1]).write_bytes(b"synthetic unit binary")
+                if command[0] == tools["compute_sanitizer"]:
+                    raise subprocess.CalledProcessError(99, command, stderr="synthetic sanitizer failure")
+                return subprocess.CompletedProcess(command, 0, "synthetic response", "")
+            with mock.patch.object(runner.subprocess, "run", side_effect=command_fixture), \
+                    contextlib.redirect_stderr(io.StringIO()):
+                self.assertEqual(runner.run_validation(args, tools, {}), 1)
+            record = json.loads((path / "execution.json").read_text())
+            self.assertEqual(record["status"], "failed")
+            self.assertEqual(record["commands"][-1]["label"], "memcheck")
+            self.assertEqual(record["commands"][-1]["returncode"], 99)
+            self.assertFalse((path / "benchmark.json").exists())
+            self.assertFalse(any(entry["label"] == "build-benchmark" for entry in record["commands"]))
+
+    def test_current_runner_refuses_old_two_kernel_results(self):
+        fixture = synthetic_run()
+        fixture["results"] = fixture["results"][:2]
+        with self.assertRaises(ValueError):
+            runner.validate_run(fixture, required_schema=2, repeats=3)
+        fixture = synthetic_run()
+        fixture["schema_version"] = 1
+        with self.assertRaises(ValueError):
+            runner.validate_run(fixture, required_schema=2, repeats=3)
 
 
 if __name__ == "__main__":

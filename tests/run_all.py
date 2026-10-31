@@ -78,8 +78,13 @@ def main():
         run([compiler, "-std=c++17", *warnings, "-Werror", "-I", cuda / "include",
              cuda / "src/reference/reference.cpp", cuda / "tests/reference_test.cpp", "-o", executable])
         run([executable])
+        layout_executable = build / "tile_layout_test"
+        run([compiler, "-std=c++17", *warnings, "-Werror", "-I", cuda / "include",
+             cuda / "src/reference/reference.cpp", cuda / "tests/tile_layout_test.cpp",
+             "-o", layout_executable])
+        run([layout_executable])
         run([sys.executable, "-m", "unittest", "discover", "-s", cuda / "tests", "-p", "test_*.py"])
-        results["cuda_host"] = "PASS: CPU reference checks and 6 analysis tests"
+        results["cuda_host"] = "PASS: CPU reference, host tile-layout oracle, and CUDA host Python tests"
     print(json.dumps({"compiler": compiler, "build_directory": str(build),
                       "results": results, "commands": commands,
                       "gpu": "NOT RUN: this direct runner covers CPU-side checks only"}, indent=2))

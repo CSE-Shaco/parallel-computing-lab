@@ -15,6 +15,8 @@ import sys
 sys.dont_write_bytecode = True
 ROOT = Path(__file__).resolve().parents[1]
 DEFAULT_SHAPES = ("257,65", "1024,128", "4096,256")
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from analyze_results import KERNELS, VARIANTS, load_document, summarize, validate_run
 
 
 def now():
@@ -67,14 +69,17 @@ def run_validation(args, tools, probes):
     logs = out / "logs"
     build.mkdir()
     logs.mkdir()
-    metadata = {"schema_version": 1, "status": "running", "started_utc": now(),
+    metadata = {"schema_version": 2, "benchmark_schema_version": 2, "status": "running", "started_utc": now(),
                 "host": platform.platform(), "architecture": args.arch,
                 "requested_shapes": args.shape or list(DEFAULT_SHAPES), "repeats": args.repeats,
                 "source_sha256": sources(), "preflight": probes, "commands": [],
                 "CUDA_VISIBLE_DEVICES": os.environ.get("CUDA_VISIBLE_DEVICES"),
                 "timing_scope": "Kernel-only CUDA events; CPU reference and transfers excluded.",
                 "measurement_limits": "GPU clocks, thermal state, power policy and background load are not fixed by this runner.",
-                "operation": "uncentered_second_moment", "sanitizer": "Not Verified: tool unavailable"}
+                "operation": "uncentered_second_moment", "sanitizer": "Not Verified: tool unavailable",
+                "kernel_names": list(KERNELS), "variant_configuration": VARIANTS,
+                "measurement_policy": {"warmup": 10, "kernel_order": "rotating"},
+                "correctness_shapes": 12}
     record = out / "execution.json"
 
     def save():
@@ -110,13 +115,18 @@ def run_validation(args, tools, probes):
     try:
         flags = ["-std=c++17", "-O3", "-lineinfo", "-arch=" + args.arch, "-I", ROOT / "include"]
         common = [ROOT / "src/reference/reference.cpp", ROOT / "src/kernels/baseline.cu",
-                  ROOT / "src/kernels/tiled.cu"]
+                  ROOT / "src/kernels/tiled.cu", ROOT / "src/kernels/coalesced_tiled.cu",
+                  ROOT / "src/kernels/register_tiled.cu"]
         host = build / "reference_test"
+        layout = build / "tile_layout_test"
         correct = build / "correctness_test"
         benchmark = build / "kernel_benchmark"
         execute("build-host-reference", [tools["nvcc"], *flags, ROOT / "src/reference/reference.cpp",
                                          ROOT / "tests/reference_test.cpp", "-o", host])
         execute("host-reference", [host])
+        execute("build-host-layout", [tools["nvcc"], *flags, ROOT / "src/reference/reference.cpp",
+                                      ROOT / "tests/tile_layout_test.cpp", "-o", layout])
+        execute("host-layout", [layout])
         execute("build-correctness", [tools["nvcc"], *flags, *common,
                                        ROOT / "tests/correctness_test.cu", "-o", correct])
         execute("gpu-correctness", [correct])
@@ -127,7 +137,7 @@ def run_validation(args, tools, probes):
             metadata["sanitizer"] = "PASS: memcheck and racecheck"
         execute("build-benchmark", [tools["nvcc"], *flags, *common,
                                     ROOT / "src/main.cu", "-o", benchmark])
-        metadata["binary_sha256"] = {p.name: digest(p) for p in (host, correct, benchmark)}
+        metadata["binary_sha256"] = {p.name: digest(p) for p in (host, layout, correct, benchmark)}
         build_options = json.dumps([x["command"] for x in metadata["commands"] if x["label"].startswith("build-")])
         raw = out / "raw"
         raw.mkdir()
@@ -139,15 +149,21 @@ def run_validation(args, tools, probes):
                     [sys.executable, ROOT / "benchmarks/run_benchmark.py", "--binary", benchmark,
                      "--repeats", str(args.repeats), "--build-options", build_options,
                      "--shape", dimensions, "--output", destination])
-            piece = json.loads(destination.read_text())
+            piece = load_document(destination.read_text())
             if len(piece.get("runs", [])) != 1 or piece.get("binary_sha256") != metadata["binary_sha256"][benchmark.name]:
                 raise ValueError("per-shape output or executable identity is invalid")
+            gpu_run = piece["runs"][0]
+            validate_run(gpu_run, required_schema=2, repeats=args.repeats)
+            if f"{gpu_run['samples']},{gpu_run['features']}" != dimensions:
+                raise ValueError("per-shape output dimensions disagree with request")
             measured.extend(piece["runs"])
             metadata["completed_shapes"].append(dimensions)
             save()
         document = {"captured_at_utc": now(), "host": platform.platform(),
                     "build_options": build_options,
-                    "binary_sha256": metadata["binary_sha256"][benchmark.name], "runs": measured}
+                    "binary_sha256": metadata["binary_sha256"][benchmark.name], "runs": measured,
+                    "benchmark_schema_version": 2, "kernel_names": list(KERNELS),
+                    "measurement_policy": metadata["measurement_policy"]}
         with (out / "benchmark.json").open("x") as stream:
             stream.write(json.dumps(document, indent=2, allow_nan=False) + "\n")
         actual_shapes = [f"{r['samples']},{r['features']}" for r in document["runs"]]
@@ -156,9 +172,8 @@ def run_validation(args, tools, probes):
         if document["binary_sha256"] != metadata["binary_sha256"][benchmark.name]:
             raise ValueError("benchmark executable changed before measurement")
         for gpu_run in document["runs"]:
-            if gpu_run.get("validated") is not True or any(
-                    len(k["milliseconds"]) != args.repeats for k in gpu_run["results"]):
-                raise ValueError("correctness gate or requested repetition count was not satisfied")
+            validate_run(gpu_run, required_schema=2, repeats=args.repeats)
+        summarize(document)
         analyzed = execute("analysis", [sys.executable, ROOT / "benchmarks/analyze_results.py",
                                         out / "benchmark.json", "--figure", out / "kernel-time.svg"])
         summary = [json.loads(line) for line in analyzed.splitlines() if line.strip()]
@@ -168,7 +183,7 @@ def run_validation(args, tools, probes):
         if any(digest(build / name) != value for name, value in metadata["binary_sha256"].items()):
             raise ValueError("an executable changed during execution")
         metadata.update(status="complete", completed_utc=now(),
-                        gpu_validation="PASS: host reference, 8 GPU correctness shapes, per-run CPU checks",
+                        gpu_validation="PASS: host reference and layout oracle, 12 GPU correctness shapes for four kernels, per-run CPU checks",
                         result_sha256={name: digest(out / name) for name in
                                        ("benchmark.json", "summary.json", "kernel-time.svg")})
         save()
@@ -187,7 +202,7 @@ def main(argv=None):
     parser.add_argument("--arch", help="explicit target architecture, e.g. sm_75 only for a compatible GPU")
     parser.add_argument("--nvcc", default="nvcc", help="CUDA compiler executable")
     parser.add_argument("--shape", type=shape, action="append", default=[])
-    parser.add_argument("--repeats", type=int, default=30)
+    parser.add_argument("--repeats", type=int, default=40)
     parser.add_argument("--timeout", type=int, default=300, help="maximum seconds per command")
     parser.add_argument("--preflight-only", action="store_true", help="probe actual NVIDIA tools/device; create no run")
     args = parser.parse_args(argv)
