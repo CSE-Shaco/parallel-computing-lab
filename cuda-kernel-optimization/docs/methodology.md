@@ -1,0 +1,14 @@
+# Measurement methodology
+
+1. Build in Release on the target NVIDIA GPU; record the exact CMake commands, architecture and flags. Kernel target explicitly adds `-O3`; no fast-math flag is added.
+2. Run all CPU/GPU correctness cases and Compute Sanitizer. A compile or runtime failure is a failed validation, never a timing sample.
+3. Use identical deterministic input, dimensions and block size for both kernels. Input values include negatives and nonzero means.
+4. Allocate once, transfer input once, generate the double-precision CPU reference outside timing, and validate both kernels. Initialize output to a NaN byte pattern before each validation so unwritten outputs fail.
+5. Warm up both kernels three times, then synchronize the device. Alternate first/second kernel per repetition; use separate event start/stop records around each individual launch on the default stream. Synchronizing the stop event also reports asynchronous kernel failures.
+6. Keep allocation, transfer and CPU work outside measurements. This measures kernel execution under this harness, not total application latency. GPU clock state, thermal conditions, other processes and fixed input reuse can still affect results.
+7. Retain all samples. Report median kernel time, min–max spread and sample count per shape. Speedup is the ratio of medians for the same shape/run, not a ratio of individually selected best samples.
+8. Validate output again after timing. The default tolerance is `2e-4 + 2e-4*abs(reference)`; review tolerance and accumulation error before extending to very large sample counts or different distributions.
+
+JSON records capture GPU name, compute capability, CUDA compiler/runtime/driver versions, shape, block size, warmup count and correctness status. The Python wrapper adds timestamp, host, executable SHA-256 and user-supplied build options. Existing result and figure files are never overwritten by these scripts. Mixed GPU/runtime/compiler environments and duplicate shapes are rejected by the analyzer; analyze independent sweeps separately. Preserve GPU operating mode, power/clock configuration and competing workload notes alongside any published experiment. Run repeated independent sweeps before making broad optimization claims.
+
+No results have been measured on a CUDA device in the current environment. A graph tool cannot establish whether a supplied JSON file is authentic; only pass the output of a successful target-device run.
