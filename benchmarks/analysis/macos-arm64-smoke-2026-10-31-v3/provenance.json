@@ -1,0 +1,27 @@
+{
+  "analysis_schema_version": 2,
+  "generated_utc": "2026-10-31T04:13:54.519960+00:00",
+  "source_run_relative_to_analysis": "../../results/macos-arm64-smoke-2026-10-31-v3",
+  "source_sha256": {
+    "metadata.json": "6b17593e5b30dfc8cde507f058877b07988a2fc05957d7537fbbd58b61f6d025",
+    "raw.jsonl": "16f8e4eba4d097b2cbbd4ebb8946de58a73e07d6db78d03ac56624443ee91c9f",
+    "summary.json": "c72721e446af962843d42178c21f977ba809e75742a5e9c659b36207283ca0d2",
+    "medians.svg": "721971be8d3bc49f94bb8bb4feba652452200a71617111e10d19e1edfec46722"
+  },
+  "source_recorded_utc": "2026-10-31T01:30:33.745445+00:00",
+  "source_environment": {
+    "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+    "machine": "arm64",
+    "logical_cpus": 14,
+    "processor": "arm",
+    "cpu_model_captured_now": null,
+    "compiler": "Homebrew clang 23.1.4",
+    "flags": "-O3 -std=c++11; -pthread for pi_mc; -fopenmp for scheduling"
+  },
+  "records": 99,
+  "configurations": 33,
+  "repeats_per_configuration": 3,
+  "validation": "Complete declared configuration/repeat matrix; field/type/finite checks; output consistency; worker workload conservation; recorded summary agreement when supplied.",
+  "scope": "Derived statistics and figures only. No new measurements; no GPU data. Metadata is preserved evidence, not build/hardware attestation.",
+  "graphics": "Deterministic dependency-free SVG rendered with the Python standard-library XML API."
+}

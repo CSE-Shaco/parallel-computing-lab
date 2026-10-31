@@ -1,0 +1,200 @@
+{
+  "omp/tail/auto/chunk 0": {
+    "runs": 3,
+    "median_ms": 0.108083,
+    "min_ms": 0.105375,
+    "max_ms": 0.138542
+  },
+  "omp/tail/dynamic/chunk 1": {
+    "runs": 3,
+    "median_ms": 0.120541,
+    "min_ms": 0.117834,
+    "max_ms": 0.143875
+  },
+  "omp/tail/dynamic/chunk 10": {
+    "runs": 3,
+    "median_ms": 0.119375,
+    "min_ms": 0.117833,
+    "max_ms": 0.123375
+  },
+  "omp/tail/dynamic/chunk 100": {
+    "runs": 3,
+    "median_ms": 0.304125,
+    "min_ms": 0.270875,
+    "max_ms": 0.338666
+  },
+  "omp/tail/guided/chunk 1": {
+    "runs": 3,
+    "median_ms": 0.114084,
+    "min_ms": 0.103333,
+    "max_ms": 0.115208
+  },
+  "omp/tail/guided/chunk 10": {
+    "runs": 3,
+    "median_ms": 0.131667,
+    "min_ms": 0.123083,
+    "max_ms": 0.132166
+  },
+  "omp/tail/guided/chunk 100": {
+    "runs": 3,
+    "median_ms": 0.265291,
+    "min_ms": 0.253875,
+    "max_ms": 0.272792
+  },
+  "omp/tail/static/chunk 1": {
+    "runs": 3,
+    "median_ms": 0.109167,
+    "min_ms": 0.103458,
+    "max_ms": 0.16725
+  },
+  "omp/tail/static/chunk 10": {
+    "runs": 3,
+    "median_ms": 0.121166,
+    "min_ms": 0.119584,
+    "max_ms": 0.123875
+  },
+  "omp/tail/static/chunk 100": {
+    "runs": 3,
+    "median_ms": 0.262417,
+    "min_ms": 0.26075,
+    "max_ms": 0.263542
+  },
+  "omp/uniform/auto/chunk 0": {
+    "runs": 3,
+    "median_ms": 0.053291,
+    "min_ms": 0.049208,
+    "max_ms": 0.054875
+  },
+  "omp/uniform/dynamic/chunk 1": {
+    "runs": 3,
+    "median_ms": 0.062833,
+    "min_ms": 0.062333,
+    "max_ms": 0.085542
+  },
+  "omp/uniform/dynamic/chunk 10": {
+    "runs": 3,
+    "median_ms": 0.053042,
+    "min_ms": 0.050958,
+    "max_ms": 0.109292
+  },
+  "omp/uniform/dynamic/chunk 100": {
+    "runs": 3,
+    "median_ms": 0.049583,
+    "min_ms": 0.048625,
+    "max_ms": 0.056291
+  },
+  "omp/uniform/guided/chunk 1": {
+    "runs": 3,
+    "median_ms": 0.053625,
+    "min_ms": 0.04725,
+    "max_ms": 0.056125
+  },
+  "omp/uniform/guided/chunk 10": {
+    "runs": 3,
+    "median_ms": 0.053375,
+    "min_ms": 0.052459,
+    "max_ms": 0.054917
+  },
+  "omp/uniform/guided/chunk 100": {
+    "runs": 3,
+    "median_ms": 0.05475,
+    "min_ms": 0.050792,
+    "max_ms": 0.067375
+  },
+  "omp/uniform/static/chunk 1": {
+    "runs": 3,
+    "median_ms": 0.057625,
+    "min_ms": 0.057208,
+    "max_ms": 0.086208
+  },
+  "omp/uniform/static/chunk 10": {
+    "runs": 3,
+    "median_ms": 0.052917,
+    "min_ms": 0.050042,
+    "max_ms": 0.062708
+  },
+  "omp/uniform/static/chunk 100": {
+    "runs": 3,
+    "median_ms": 0.058667,
+    "min_ms": 0.049458,
+    "max_ms": 0.066375
+  },
+  "pi/local/1 threads": {
+    "runs": 3,
+    "median_ms": 0.3205,
+    "min_ms": 0.317208,
+    "max_ms": 0.321042
+  },
+  "pi/local/16 threads": {
+    "runs": 3,
+    "median_ms": 0.165834,
+    "min_ms": 0.155042,
+    "max_ms": 0.166834
+  },
+  "pi/local/2 threads": {
+    "runs": 3,
+    "median_ms": 0.194542,
+    "min_ms": 0.179833,
+    "max_ms": 0.195042
+  },
+  "pi/local/32 threads": {
+    "runs": 3,
+    "median_ms": 0.307209,
+    "min_ms": 0.273458,
+    "max_ms": 0.332542
+  },
+  "pi/local/4 threads": {
+    "runs": 3,
+    "median_ms": 0.120667,
+    "min_ms": 0.119625,
+    "max_ms": 0.122834
+  },
+  "pi/local/8 threads": {
+    "runs": 3,
+    "median_ms": 0.156541,
+    "min_ms": 0.129167,
+    "max_ms": 0.157125
+  },
+  "pi/mutex/1 threads": {
+    "runs": 3,
+    "median_ms": 0.58875,
+    "min_ms": 0.556375,
+    "max_ms": 0.609209
+  },
+  "pi/mutex/16 threads": {
+    "runs": 3,
+    "median_ms": 1.585625,
+    "min_ms": 1.560958,
+    "max_ms": 1.711083
+  },
+  "pi/mutex/2 threads": {
+    "runs": 3,
+    "median_ms": 0.861042,
+    "min_ms": 0.850583,
+    "max_ms": 0.9335
+  },
+  "pi/mutex/32 threads": {
+    "runs": 3,
+    "median_ms": 1.753916,
+    "min_ms": 1.676042,
+    "max_ms": 1.831292
+  },
+  "pi/mutex/4 threads": {
+    "runs": 3,
+    "median_ms": 1.812459,
+    "min_ms": 1.747833,
+    "max_ms": 2.117625
+  },
+  "pi/mutex/8 threads": {
+    "runs": 3,
+    "median_ms": 1.889125,
+    "min_ms": 1.852459,
+    "max_ms": 1.907958
+  },
+  "pi/serial/1 threads": {
+    "runs": 3,
+    "median_ms": 0.0825,
+    "min_ms": 0.082375,
+    "max_ms": 0.094584
+  }
+}

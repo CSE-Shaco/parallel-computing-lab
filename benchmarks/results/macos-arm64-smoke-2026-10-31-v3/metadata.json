@@ -1,0 +1,29 @@
+{
+  "recorded_utc": "2026-10-31T01:30:33.745445+00:00",
+  "platform": "macOS-27.2-arm64-arm-64bit-Mach-O",
+  "machine": "arm64",
+  "logical_cpus": 14,
+  "processor": "arm",
+  "python": "3.15.1",
+  "compiler": "Homebrew clang 23.1.4",
+  "flags": "-O3 -std=c++11; -pthread for pi_mc; -fopenmp for scheduling",
+  "argv": {
+    "build": "build",
+    "out": "benchmarks/results/macos-arm64-smoke-2026-10-31-v3",
+    "samples": 100000,
+    "repeats": 3,
+    "items": 300,
+    "light": 60,
+    "heavy": 3000,
+    "compiler": "Homebrew clang 23.1.4",
+    "flags": "-O3 -std=c++11; -pthread for pi_mc; -fopenmp for scheduling"
+  },
+  "binary_sha256": {
+    "pi_mc": "68c34b273bfaf8e8369819e4cdcdf4e51267989ef6cabd63e9a1d2b8eb15387f",
+    "scheduling": "2d9c81eb5ed7b73eae3aabd1eca6db0daefecdac42998c6287e5e8cca7853f60"
+  },
+  "omp_environment": {},
+  "scope": "Exploratory local run; no CPU affinity, clock, thermal, or background-load control.",
+  "timing": "Internal steady_clock wall time; process startup and correctness reference excluded. Thread/team creation included.",
+  "missing": []
+}

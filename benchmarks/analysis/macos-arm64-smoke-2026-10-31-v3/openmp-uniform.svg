@@ -1,0 +1,81 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1100" height="500" viewBox="0 0 1100 500" role="img">
+  <title>OpenMP scheduling: uniform workload</title>
+  <desc>300 items, light=60, heavy=3000; requested 4, actual 4 workers; n=3; median and min-max; independent x-axis per workload</desc>
+  <rect x="0" y="0" width="1100" height="500" fill="white" />
+  <text x="25" y="30" font-family="sans-serif" font-size="20" fill="#14273b">OpenMP scheduling: uniform workload</text>
+  <text x="25" y="55" font-family="sans-serif" font-size="12" fill="#46566a">300 items, light=60, heavy=3000; requested 4, actual 4 workers; n=3; median and min-max; independent x-axis per workload</text>
+  <line x1="240.0" y1="88" x2="240.0" y2="415" stroke="#dce3eb" />
+  <text x="240.0" y="437" text-anchor="middle" font-family="sans-serif" font-size="11">0.000</text>
+  <line x1="352.0" y1="88" x2="352.0" y2="415" stroke="#dce3eb" />
+  <text x="352.0" y="437" text-anchor="middle" font-family="sans-serif" font-size="11">0.024</text>
+  <line x1="464.0" y1="88" x2="464.0" y2="415" stroke="#dce3eb" />
+  <text x="464.0" y="437" text-anchor="middle" font-family="sans-serif" font-size="11">0.049</text>
+  <line x1="576.0" y1="88" x2="576.0" y2="415" stroke="#dce3eb" />
+  <text x="576.0" y="437" text-anchor="middle" font-family="sans-serif" font-size="11">0.073</text>
+  <line x1="688.0" y1="88" x2="688.0" y2="415" stroke="#dce3eb" />
+  <text x="688.0" y="437" text-anchor="middle" font-family="sans-serif" font-size="11">0.098</text>
+  <line x1="799.9999999999999" y1="88" x2="799.9999999999999" y2="415" stroke="#dce3eb" />
+  <text x="799.9999999999999" y="437" text-anchor="middle" font-family="sans-serif" font-size="11">0.122</text>
+  <text x="520.0" y="463" text-anchor="middle" font-family="sans-serif" font-size="13">Measured wall time (ms)</text>
+  <text x="25" y="113" font-family="sans-serif" font-size="12">static / chunk 1</text>
+  <rect x="240" y="100" width="263.62862789591185" height="18" fill="#176ca4" />
+  <line x1="501.7208944845002" y1="109" x2="634.3930022325513" y2="109" stroke="#152438" stroke-width="2" />
+  <line x1="501.7208944845002" y1="103" x2="501.7208944845002" y2="115" stroke="#152438" />
+  <line x1="634.3930022325513" y1="103" x2="634.3930022325513" y2="115" stroke="#152438" />
+  <text x="830" y="113" font-family="monospace" font-size="10">0.057625 [0.057208, 0.086208]</text>
+  <text x="25" y="143" font-family="sans-serif" font-size="12">static / chunk 10</text>
+  <rect x="240" y="130" width="242.08999743805583" height="18" fill="#176ca4" />
+  <line x1="468.93715916993006" y1="139" x2="526.8828459539582" y2="139" stroke="#152438" stroke-width="2" />
+  <line x1="468.93715916993006" y1="133" x2="468.93715916993006" y2="145" stroke="#152438" />
+  <line x1="526.8828459539582" y1="133" x2="526.8828459539582" y2="145" stroke="#152438" />
+  <text x="830" y="143" font-family="monospace" font-size="10">0.052917 [0.050042, 0.062708]</text>
+  <text x="25" y="173" font-family="sans-serif" font-size="12">static / chunk 100</text>
+  <rect x="240" y="160" width="268.39567397430733" height="18" fill="#176ca4" />
+  <line x1="466.26541741390037" y1="169" x2="543.6590052336859" y2="169" stroke="#152438" stroke-width="2" />
+  <line x1="466.26541741390037" y1="163" x2="466.26541741390037" y2="175" stroke="#152438" />
+  <line x1="543.6590052336859" y1="163" x2="543.6590052336859" y2="175" stroke="#152438" />
+  <text x="830" y="173" font-family="monospace" font-size="10">0.058667 [0.049458, 0.066375]</text>
+  <text x="25" y="203" font-family="sans-serif" font-size="12">dynamic / chunk 1</text>
+  <rect x="240" y="190" width="287.454708487355" height="18" fill="#267b61" />
+  <line x1="525.1672583537679" y1="199" x2="631.3461186546133" y2="199" stroke="#152438" stroke-width="2" />
+  <line x1="525.1672583537679" y1="193" x2="525.1672583537679" y2="205" stroke="#152438" />
+  <line x1="631.3461186546133" y1="193" x2="631.3461186546133" y2="205" stroke="#152438" />
+  <text x="830" y="203" font-family="monospace" font-size="10">0.062833 [0.062333, 0.085542]</text>
+  <text x="25" y="233" font-family="sans-serif" font-size="12">dynamic / chunk 10</text>
+  <rect x="240" y="220" width="242.6618599714526" height="18" fill="#267b61" />
+  <line x1="473.12776781466164" y1="229" x2="740.0" y2="229" stroke="#152438" stroke-width="2" />
+  <line x1="473.12776781466164" y1="223" x2="473.12776781466164" y2="235" stroke="#152438" />
+  <line x1="740.0" y1="223" x2="740.0" y2="235" stroke="#152438" />
+  <text x="830" y="233" font-family="monospace" font-size="10">0.053042 [0.050958, 0.109292]</text>
+  <text x="25" y="263" font-family="sans-serif" font-size="12">dynamic / chunk 100</text>
+  <rect x="240" y="250" width="226.83727994729713" height="18" fill="#267b61" />
+  <line x1="462.45452549134427" y1="259" x2="497.5257109395015" y2="259" stroke="#152438" stroke-width="2" />
+  <line x1="462.45452549134427" y1="253" x2="462.45452549134427" y2="265" stroke="#152438" />
+  <line x1="497.5257109395015" y1="253" x2="497.5257109395015" y2="265" stroke="#152438" />
+  <text x="830" y="263" font-family="monospace" font-size="10">0.049583 [0.048625, 0.056291]</text>
+  <text x="25" y="293" font-family="sans-serif" font-size="12">guided / chunk 1</text>
+  <rect x="240" y="280" width="245.32902682721516" height="18" fill="#7754a0" />
+  <line x1="456.16403762397977" y1="289" x2="496.76627749515063" y2="289" stroke="#152438" stroke-width="2" />
+  <line x1="456.16403762397977" y1="283" x2="456.16403762397977" y2="295" stroke="#152438" />
+  <line x1="496.76627749515063" y1="283" x2="496.76627749515063" y2="295" stroke="#152438" />
+  <text x="830" y="293" font-family="monospace" font-size="10">0.053625 [0.047250, 0.056125]</text>
+  <text x="25" y="323" font-family="sans-serif" font-size="12">guided / chunk 10</text>
+  <rect x="240" y="310" width="244.18530176042162" height="18" fill="#7754a0" />
+  <line x1="479.9946931156901" y1="319" x2="491.2397979724042" y2="319" stroke="#152438" stroke-width="2" />
+  <line x1="479.9946931156901" y1="313" x2="479.9946931156901" y2="325" stroke="#152438" />
+  <line x1="491.2397979724042" y1="313" x2="491.2397979724042" y2="325" stroke="#152438" />
+  <text x="830" y="323" font-family="monospace" font-size="10">0.053375 [0.052459, 0.054917]</text>
+  <text x="25" y="353" font-family="sans-serif" font-size="12">guided / chunk 100</text>
+  <rect x="240" y="340" width="250.47578962778607" height="18" fill="#7754a0" />
+  <line x1="472.36833437031066" y1="349" x2="548.2339055008601" y2="349" stroke="#152438" stroke-width="2" />
+  <line x1="472.36833437031066" y1="343" x2="472.36833437031066" y2="355" stroke="#152438" />
+  <line x1="548.2339055008601" y1="343" x2="548.2339055008601" y2="355" stroke="#152438" />
+  <text x="830" y="353" font-family="monospace" font-size="10">0.054750 [0.050792, 0.067375]</text>
+  <text x="25" y="383" font-family="sans-serif" font-size="12">auto (runtime choice)</text>
+  <rect x="240" y="370" width="243.801010137979" height="18" fill="#b96420" />
+  <line x1="465.12169234710683" y1="379" x2="491.0476521611829" y2="379" stroke="#152438" stroke-width="2" />
+  <line x1="465.12169234710683" y1="373" x2="465.12169234710683" y2="385" stroke="#152438" />
+  <line x1="491.0476521611829" y1="373" x2="491.0476521611829" y2="385" stroke="#152438" />
+  <text x="830" y="383" font-family="monospace" font-size="10">0.053291 [0.049208, 0.054875]</text>
+  <text x="25" y="490" font-family="sans-serif" font-size="11" fill="#46566a">Small, uncontrolled run: ranges are not confidence intervals; compare policies within this workload.</text>
+</svg>
